@@ -1,11 +1,6 @@
-import { Welcome } from '../components/Welcome/Welcome';
-import { ColorSchemeToggle } from '../components/ColorSchemeToggle/ColorSchemeToggle';
+import { useWeb3 } from '@/contexts/Web3Context';
 
 export default function HomePage() {
-  return (
-    <>
-      <Welcome />
-      <ColorSchemeToggle />
-    </>
-  );
+  const { web3, accounts, contract } = useWeb3();
+  return <>{accounts?.map((acc) => <div key={acc}>{acc}</div>)}</>;
 }
