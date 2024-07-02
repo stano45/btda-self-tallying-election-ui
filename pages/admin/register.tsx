@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
+import Web3 from 'web3';
 import {
   TextInput,
   Button,
@@ -9,11 +10,42 @@ import {
   DefaultMantineColor,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
+import YesNoVoting from '../../contracts/YesNoVoting.json';
+
+interface Candidate {
+  name: string;
+}
 
 const RegisterPage = () => {
   const [name, setName] = useState<string>('');
-  const [id, setId] = useState<string>('');
-  const [candidates, setCandidates] = useState<{ name: string; party: string }[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [accounts, setAccounts] = useState<string[]>([]);
+  const [contract, setContract] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [web3, setWeb3] = useState<any>(null);
+
+  useEffect(() => {
+    const initWeb3 = async () => {
+      const web3Instance = new Web3('http://127.0.0.1:8545'); // Connect to local Ganache
+      try {
+        const ethAccounts = await web3Instance.eth.getAccounts();
+        const networkId = await web3Instance.eth.net.getId();
+        const deployedNetwork = YesNoVoting.networks[networkId];
+        const instance = new web3Instance.eth.Contract(
+          YesNoVoting.abi,
+          deployedNetwork && deployedNetwork.address
+        );
+        setWeb3(web3Instance);
+        setAccounts(ethAccounts);
+        setContract(instance);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Could not connect to wallet', error);
+        showNotification('Connection failed', 'Could not connect to wallet', 'red');
+      }
+    };
+    initWeb3();
+  }, []);
 
   const showNotification = useCallback(
     (title: string, message: string, color: DefaultMantineColor) => {
@@ -27,21 +59,38 @@ const RegisterPage = () => {
   );
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!name || !id) {
+      if (!name || !contract || !accounts.length) {
         return;
       }
-      setCandidates([...candidates, { name, party: id }]);
-      setName('');
-      setId('');
-      showNotification(
-        'Candidate registered',
-        `Candidate ${name} has been registered successfully!`,
-        'green'
-      );
+      if (candidates.find((candidate) => candidate.name === name)) {
+        showNotification(
+          'Candidate already registered',
+          `Candidate ${name} is already registered`,
+          'red'
+        );
+        return;
+      }
+      try {
+        await contract.methods
+          .addCandidate(name)
+          .send({ from: accounts[0], gas: '1000000', gasPrice: 1000000000 });
+        setCandidates([...candidates, { name }]);
+        setName('');
+        showNotification(
+          'Candidate registered',
+          `Candidate ${name} has been registered successfully!`,
+          'green'
+        );
+      } catch (error) {
+        const errorMessage = `Failed to register candidate ${name}: ${error}`;
+        // eslint-disable-next-line no-console
+        console.error('Error registering candidate', error);
+        showNotification('Registration failed', errorMessage, 'red');
+      }
     },
-    [name, id]
+    [name, contract, accounts, candidates, showNotification]
   );
 
   return (
@@ -58,13 +107,6 @@ const RegisterPage = () => {
           onChange={(e) => setName(e.currentTarget.value)}
           required
         />
-        <TextInput
-          label="Candidate ID"
-          placeholder="Enter candidate ID"
-          value={id}
-          onChange={(e) => setId(e.currentTarget.value)}
-          required
-        />
         <Group mt="md">
           <Button type="submit">Register</Button>
         </Group>
@@ -77,9 +119,7 @@ const RegisterPage = () => {
       )}
       <List>
         {candidates.map((candidate, index) => (
-          <List.Item key={index}>
-            {candidate.name} ({candidate.party})
-          </List.Item>
+          <List.Item key={index}>{candidate.name}</List.Item>
         ))}
       </List>
     </Container>
