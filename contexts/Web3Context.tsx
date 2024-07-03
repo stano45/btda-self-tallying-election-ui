@@ -8,7 +8,7 @@ interface Web3ContextType {
   accounts: string[] | undefined;
   contract: any | undefined;
   selectedAccount: string | undefined;
-  setSelectedAccount: (account: string) => void;
+  setSelectedAccount: (account: string | undefined) => void;
 }
 
 const Web3Context = createContext<Web3ContextType>({
@@ -27,7 +27,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
   const [web3, setWeb3] = useState<any>(null);
   const [accounts, setAccounts] = useState<string[]>([]);
   const [contract, setContract] = useState<any>(null);
-  const [selectedAccount, setSelectedAccount] = useState<string>('');
+  const [selectedAccount, setSelectedAccount] = useState<string>();
 
   useEffect(() => {
     const initWeb3 = async () => {

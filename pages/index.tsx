@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Select, Button, Container } from '@mantine/core';
+import { Select, Button, Container, Title } from '@mantine/core';
 import router from 'next/router';
 import { useWeb3 } from '@/contexts/Web3Context';
 
@@ -44,8 +44,10 @@ export default function HomePage() {
 
   return (
     <Container>
+      <Title order={2} my="lg">
+        Login
+      </Title>
       <Select
-        label="Select Account"
         placeholder="Pick one"
         data={accountsData}
         value={selectedAccount}
