@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TextInput, Button, Group, Container, List, Title, ScrollArea, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
+import router from 'next/router';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { Candidate } from '@/types';
 import { useGetCandidates } from '@/hooks/useGetCandidates';
@@ -65,21 +66,30 @@ const RegisterPage = () => {
     [name, contract, accounts, candidates]
   );
 
+  const handleStartVoting = useCallback(async () => {
+    const result = await startVoting();
+    if (result) {
+      router.push('/admin/waiting');
+    }
+  }, [startVoting]);
+
   const openModal = () =>
     modals.openConfirmModal({
-      title: 'Confirm action',
+      title: (
+        <Text size="sm" fw={500}>
+          Confirm Election Start
+        </Text>
+      ),
       children: <Text size="sm">Are you sure you want to start the election?</Text>,
       labels: { confirm: 'Confirm', cancel: 'Cancel' },
       onCancel: () => {},
-      onConfirm: () => startVoting(),
+      onConfirm: () => handleStartVoting(),
     });
 
   return (
     <>
       <Container>
-        <Title order={2} my="lg">
-          Register Candidates
-        </Title>
+        <Title my="lg">Register Candidates</Title>
 
         <form onSubmit={handleSubmit}>
           <TextInput
@@ -112,7 +122,7 @@ const RegisterPage = () => {
           </List>
         </ScrollArea.Autosize>
         <Group mt="lg" justify="center">
-          <Button loading={loading} onClick={openModal} color="green">
+          <Button loading={loading} onClick={openModal} disabled={!candidates.length} color="green">
             Start Election
           </Button>
         </Group>

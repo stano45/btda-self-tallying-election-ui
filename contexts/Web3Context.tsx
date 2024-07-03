@@ -27,9 +27,9 @@ interface Web3ProviderProps {
 }
 
 export const Web3Provider = ({ children }: Web3ProviderProps) => {
-  const [web3, setWeb3] = useState<any>(null);
+  const [web3, setWeb3] = useState<any>(undefined);
   const [accounts, setAccounts] = useState<string[]>([]);
-  const [contract, setContract] = useState<any>(null);
+  const [contract, setContract] = useState<any>(undefined);
   const [selectedAccount, setSelectedAccount] = useState<string>();
   const [votingStatus, setVotingStatus] = useState<VotingStatus>(VotingStatus.Pre);
 
@@ -69,15 +69,16 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
         });
         socketContract.events.VoteSubmitted().on('data', (eventData: any) => {
           console.log('Vote submitted', eventData);
-          notifications.show({
-            title: 'Vote submitted',
-            message: 'Voting has ended!',
-            color: 'blue',
-          });
+          // notifications.show({
+          //   title: 'Vote submitted',
+          //   message: 'Voting has ended!',
+          //   color: 'blue',
+          // });
         });
         const status = await instance.methods.getVotingStatus().call();
         const statusNr = Number(status);
         setVotingStatus(statusNr as VotingStatus);
+        setWeb3(web3Instance);
         setAccounts(ethAccounts);
         setContract(instance);
       } catch (error) {
