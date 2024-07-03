@@ -40,6 +40,33 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
           YesNoVoting.abi,
           deployedNetwork && deployedNetwork.address
         );
+        const web3test = new Web3(new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545'));
+        const instance1 = new web3test.eth.Contract(
+          YesNoVoting.abi,
+          deployedNetwork && deployedNetwork.address
+        );
+        instance1.events.VotingStarted().on('data', () => {
+          notifications.show({
+            title: 'Voting started',
+            message: 'Voting has started!',
+            color: 'blue',
+          });
+        });
+        instance1.events.VotingEnded().on('data', () => {
+          notifications.show({
+            title: 'Voting ended',
+            message: 'Voting has ended!',
+            color: 'blue',
+          });
+        });
+        instance1.events.VoteSubmitted().on('data', (eventData: any) => {
+          console.log('Vote submitted', eventData);
+          notifications.show({
+            title: 'Vote submitted',
+            message: 'Voting has ended!',
+            color: 'blue',
+          });
+        });
         setWeb3(web3Instance);
         setAccounts(ethAccounts);
         setContract(instance);

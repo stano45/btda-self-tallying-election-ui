@@ -12907,12 +12907,12 @@
     "1720004530745": {
       "events": {},
       "links": {},
-      "address": "0xF9e1371eD9aeEEB360fB7C7e773a79754f9d3E1F",
-      "transactionHash": "0x6d63b87da2de888218d2f823e5a05f971c3e7e2e9681ec9e1c6c8b73638a40b3"
+      "address": "0x1748eEF6F9dda8924CE528c7f4d3898ceE7ec7F7",
+      "transactionHash": "0x72ac639bc08fe6d6cff2aa5747a0d4f0c6cf02272feaf1c05fc0ec50a3ffc547"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-07-03T11:02:21.942Z",
+  "updatedAt": "2024-07-03T12:15:30.419Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
