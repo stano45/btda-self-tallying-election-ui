@@ -14,11 +14,6 @@ export const useStartVoting = () => {
       await contract.methods
         .startVoting()
         .send({ from: accounts[0], gas: '1000000', gasPrice: 1000000000 });
-      notifications.show({
-        title: 'Voting Started',
-        message: 'Voting has been started successfully',
-        color: 'green',
-      });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error starting voting:', error);
