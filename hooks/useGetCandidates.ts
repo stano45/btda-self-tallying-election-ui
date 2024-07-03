@@ -24,7 +24,7 @@ export const useGetCandidates = () => {
       console.error('Error fetching candidates:', error);
       notifications.show({
         title: 'Error fetching candidates',
-        message: 'Failed to fetch candidates from the blockchain',
+        message: `Failed to fetch candidates from the blockchain: ${error}`,
         color: 'red',
       });
     } finally {
