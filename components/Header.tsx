@@ -1,9 +1,9 @@
-import { AppShell, Text, Button, Group } from '@mantine/core';
+import { AppShell, Text, Button, Group, Flex } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useWeb3 } from '@/contexts/Web3Context';
 
 function Header() {
-  const { setSelectedAccount } = useWeb3();
+  const { selectedAccount, setSelectedAccount } = useWeb3();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -17,9 +17,14 @@ function Header() {
         <Text mt="sm" ml="md" fw={700} size="lg">
           Self-Tallying Election
         </Text>
-        <Button variant="outline" onClick={handleLogout} mt="md" mr="md">
-          Logout
-        </Button>
+        <Flex direction="row" align="center">
+          <Text mt="md" mr="md">
+            {!!selectedAccount && <Text>Logged in as: {selectedAccount}</Text>}
+          </Text>
+          <Button variant="outline" onClick={handleLogout} mt="md" mr="md">
+            Logout
+          </Button>
+        </Flex>
       </Group>
     </AppShell.Header>
   );

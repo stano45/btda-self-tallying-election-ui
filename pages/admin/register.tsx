@@ -7,6 +7,7 @@ import { useWeb3 } from '@/contexts/Web3Context';
 import { Candidate } from '@/types';
 import { useGetCandidates } from '@/hooks/useGetCandidates';
 import { useStartVoting } from '@/hooks/useStartVoting';
+import { useAddCandidate } from '@/hooks/addCandidate';
 
 const RegisterPage = () => {
   const { contract, accounts } = useWeb3();
@@ -19,7 +20,8 @@ const RegisterPage = () => {
     loading: getCandidatesLoading,
   } = useGetCandidates();
   const { startVoting, loading: startVotingLoading } = useStartVoting();
-  const loading = getCandidatesLoading || startVotingLoading;
+  const { addCandidate, loading: addCandidateLoading } = useAddCandidate();
+  const loading = getCandidatesLoading || startVotingLoading || addCandidateLoading;
 
   useEffect(() => {
     if (registeredCandidates) {
@@ -41,27 +43,12 @@ const RegisterPage = () => {
         });
         return;
       }
-      try {
-        await contract.methods
-          .addCandidate(name)
-          .send({ from: accounts[0], gas: '1000000', gasPrice: 1000000000 });
-        reloadCandidates();
-        notifications.show({
-          title: 'Candidate registered',
-          message: `Candidate ${name} registered successfully`,
-          color: 'blue',
-        });
-        setName('');
-      } catch (error) {
-        const errorMessage = `Failed to register candidate ${name}: ${error}`;
-        // eslint-disable-next-line no-console
-        console.error('Error registering candidate', error);
-        notifications.show({
-          title: 'Registration failed',
-          message: errorMessage,
-          color: 'red',
-        });
+      const result = await addCandidate(name);
+      if (!result) {
+        return;
       }
+      reloadCandidates();
+      setName('');
     },
     [name, contract, accounts, candidates]
   );
