@@ -68,6 +68,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
           setVotingStatus(VotingStatus.Post);
         });
         socketContract.events.VoteSubmitted().on('data', (eventData: any) => {
+          // eslint-disable-next-line no-console
           console.log('Vote submitted', eventData);
           // notifications.show({
           //   title: 'Vote submitted',

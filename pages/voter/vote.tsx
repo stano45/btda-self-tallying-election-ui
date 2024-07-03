@@ -75,7 +75,7 @@ const VotingPage = () => {
           {candidates.map((candidate) => (
             <Table.Tr key={candidate.id}>
               <Table.Td>
-                <Text align="left">{candidate.name}</Text>
+                <Text>{candidate.name}</Text>
               </Table.Td>
               <Table.Td>
                 <RadioGroup

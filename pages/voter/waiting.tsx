@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import router from 'next/router';
+import { Center, Container, Title } from '@mantine/core';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { VotingStatus } from '@/types';
-import { Center, Container, Title } from '@mantine/core';
 
 const Waiting = () => {
   const { votingStatus } = useWeb3();

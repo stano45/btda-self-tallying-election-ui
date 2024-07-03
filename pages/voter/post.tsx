@@ -1,4 +1,4 @@
-import { Button, Center, Container, Flex, Table, Title } from '@mantine/core';
+import { Center, Container, Table, Title } from '@mantine/core';
 import { useGetWinner } from '@/hooks/useGetWinner';
 
 const PostVoting = () => {
