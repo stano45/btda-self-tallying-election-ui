@@ -2,10 +2,11 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { MantineProvider } from '@mantine/core';
+import { AppShell, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { theme } from '../theme';
 import { Web3Provider } from '@/contexts/Web3Context';
+import Header from '@/components/Header';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -20,7 +21,12 @@ export default function App({ Component, pageProps }: AppProps) {
           />
           <link rel="shortcut icon" href="/favicon.svg" />
         </Head>
-        <Component {...pageProps} />
+        <AppShell header={{ height: 60 }} padding="md">
+          <Header />
+          <AppShell.Main>
+            <Component {...pageProps} />
+          </AppShell.Main>
+        </AppShell>
       </Web3Provider>
     </MantineProvider>
   );
