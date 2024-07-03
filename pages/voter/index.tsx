@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, Title } from '@mantine/core';
+import { Button, Container, Title } from '@mantine/core';
+import { useSubmitVote } from '@/hooks/useSubmitVote';
 
 const VoterPage = () => {
   //   useEffect(() => {
@@ -7,11 +8,18 @@ const VoterPage = () => {
   //   });
   // eslint-disable-next-line no-console
   console.log('VoterPage');
+  const { submitVote, loading } = useSubmitVote();
+  const handleVote = (candidateId: number, vote: boolean) => {
+    submitVote(candidateId, vote);
+  };
   return (
     <Container>
       <Title order={2} my="lg">
         Voter Page
       </Title>
+      <Button type="button" onClick={() => handleVote(1, true)}>
+        Vote Yes
+      </Button>
     </Container>
   );
 };
