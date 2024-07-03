@@ -19,13 +19,12 @@ const Waiting = () => {
 
       <Center mt="lg">
         <iframe
+          title="waiting-gif"
           src="https://giphy.com/embed/QBd2kLB5qDmysEXre9"
+          frameBorder="0"
           width="480"
           height="288"
-          frameBorder="0"
-          class="giphy-embed"
-          allowFullScreen
-        ></iframe>
+        />
       </Center>
     </Container>
   );

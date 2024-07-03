@@ -16,7 +16,7 @@ import { useSubmitVote } from '@/hooks/useSubmitVote';
 import { useGetCandidates } from '@/hooks/useGetCandidates';
 
 interface CandidateVote {
-  candidateId: string;
+  candidateId: number;
   vote: string;
 }
 
@@ -26,7 +26,7 @@ const VotingPage = () => {
   const [selectedVote, setSelectedVote] = useState<CandidateVote>();
 
   const handleVoteChange = useCallback(
-    (candidateId: string | undefined, value: string) => {
+    (candidateId: number | undefined, value: string) => {
       if (!candidateId) {
         return;
       }
@@ -64,20 +64,20 @@ const VotingPage = () => {
         Please vote for the following candidate(s):
       </Title>
       <Table>
-        <thead>
-          <tr>
-            <th style={{ width: '40%', textAlign: 'left' }}>Candidate</th>
-            <th style={{ textAlign: 'left' }}>Yes</th>
-            <th style={{ textAlign: 'left' }}>No</th>
-          </tr>
-        </thead>
-        <tbody>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Candidate</Table.Th>
+            <Table.Th>Yes</Table.Th>
+            <Table.Th>No</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {candidates.map((candidate) => (
-            <tr key={candidate.id}>
-              <td>
+            <Table.Tr key={candidate.id}>
+              <Table.Td>
                 <Text align="left">{candidate.name}</Text>
-              </td>
-              <td>
+              </Table.Td>
+              <Table.Td>
                 <RadioGroup
                   value={
                     selectedVote?.candidateId === candidate.id && selectedVote?.vote === 'yes'
@@ -89,8 +89,8 @@ const VotingPage = () => {
                 >
                   <Radio value="yes" />
                 </RadioGroup>
-              </td>
-              <td>
+              </Table.Td>
+              <Table.Td>
                 <RadioGroup
                   value={
                     selectedVote?.candidateId === candidate.id && selectedVote?.vote === 'no'
@@ -102,10 +102,10 @@ const VotingPage = () => {
                 >
                   <Radio value="no" />
                 </RadioGroup>
-              </td>
-            </tr>
+              </Table.Td>
+            </Table.Tr>
           ))}
-        </tbody>
+        </Table.Tbody>
       </Table>
       <Divider my="lg" />
       <Center my="lg">

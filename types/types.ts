@@ -1,6 +1,8 @@
 export interface Candidate {
   name: string;
-  id?: string;
+  id?: number;
+  yesVotes?: number;
+  noVotes?: number;
 }
 
 export enum VotingStatus {

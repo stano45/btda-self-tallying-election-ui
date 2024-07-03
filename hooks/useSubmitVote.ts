@@ -7,13 +7,13 @@ export const useSubmitVote = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const submitVote = useCallback(
-    async (candidateId: string, vote: boolean): Promise<boolean> => {
+    async (candidateId: number, vote: boolean): Promise<boolean> => {
       if (!contract || !accounts || !accounts.length) return false;
 
       setLoading(true);
       try {
         await contract.methods
-          .vote(parseInt(candidateId, 10), vote)
+          .vote(candidateId, vote)
           .send({ from: accounts[0], gas: '1000000', gasPrice: 1000000000 });
         notifications.show({
           title: 'Vote Submitted',
@@ -21,7 +21,7 @@ export const useSubmitVote = () => {
           color: 'green',
         });
         return true;
-      } catch (error) {
+      } catch (error: any) {
         // eslint-disable-next-line no-console
         console.error('Error submitting vote:', error);
         notifications.show({
