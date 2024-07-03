@@ -1545,10 +1545,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mantine/core@7.11.0":
-  version "7.11.0"
-  resolved "https://registry.npmjs.org/@mantine/core/-/core-7.11.0.tgz"
-  integrity sha512-yw2Llww9mw8rDWZtucdEuvkqqjHdreUibos7JCUpejL721FW1Tn9L91nsxO/YQFSS7jn4Q0CP+1YbQ/PMULmwA==
+"@mantine/core@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.npmjs.org/@mantine/core/-/core-7.11.1.tgz"
+  integrity sha512-qEwe5ijBe3MWOg4yerJ+HXMugIBtS1Bbqbdnfrg2cuHXr+2paqu8SQMzldtzqfiLsRajOtkokOkY67jUJOacCA==
   dependencies:
     "@floating-ui/react" "^0.26.9"
     clsx "^2.1.1"
@@ -1557,23 +1557,28 @@
     react-textarea-autosize "8.5.3"
     type-fest "^4.12.0"
 
-"@mantine/hooks@7.11.0":
-  version "7.11.0"
-  resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-7.11.0.tgz"
-  integrity sha512-T3472GhUXFhuhXUHlxjHv0wfb73lFyNuaw631c7Ddtgvewq0WKtNqYd7j/Zz/k02DuS3r0QXA7e12/XgqHBZjg==
+"@mantine/hooks@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.npmjs.org/@mantine/hooks/-/hooks-7.11.1.tgz"
+  integrity sha512-28WS/U6QL4jaIHf1uFpny5Tglu9MoyyM4bWLmIcAQHtOD3YHpuNvs9OTWLqKAQs6VN+kydlxvjvT+w1LBWEpQg==
 
-"@mantine/notifications@7.11.0":
-  version "7.11.0"
-  resolved "https://registry.npmjs.org/@mantine/notifications/-/notifications-7.11.0.tgz"
-  integrity sha512-UtAHJoSi4s+lfVZrkUDWMlg6j0w1LZaiMEOBMG9p5MV5dP38W75LeCy2cio2Znji2S5YzXaZolOkHBT5ZONKAw==
+"@mantine/modals@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.npmjs.org/@mantine/modals/-/modals-7.11.1.tgz"
+  integrity sha512-SDHhpt7O+Y8rTW5RaXFqIIjuD87efUqhC5kxqLyRsuivQ+tk4gMY37R5gR8o0yC6vifKBzjjYVFeeGTLocRTBg==
+
+"@mantine/notifications@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.npmjs.org/@mantine/notifications/-/notifications-7.11.1.tgz"
+  integrity sha512-4MpuePstpWvCwiEX75oUAdxp3SXWsiq0+fd4zb5YMu+CaqiaDbUIOupEpi/uCez3lYhY0ojHyjNgYsqZ7cy1Fg==
   dependencies:
-    "@mantine/store" "7.11.0"
+    "@mantine/store" "7.11.1"
     react-transition-group "4.4.5"
 
-"@mantine/store@7.11.0":
-  version "7.11.0"
-  resolved "https://registry.npmjs.org/@mantine/store/-/store-7.11.0.tgz"
-  integrity sha512-zPmOpdFgvkUqYKSK7NNKbhgXsh2QPw51m3iypTaj0mw+rZbk3WSH9vZvaEx59X0QG+ahwUg2/HezbjfXFUbvrA==
+"@mantine/store@7.11.1":
+  version "7.11.1"
+  resolved "https://registry.npmjs.org/@mantine/store/-/store-7.11.1.tgz"
+  integrity sha512-5xOompA7pADDvYlw6KEr0YIr95bdFI0W/KZizi8E/BKOLVUpku1UvqcClodq4U0Xjz5eZt/Jf3gEV9lyJbt8Zw==
 
 "@mdx-js/react@^3.0.0":
   version "3.0.1"
