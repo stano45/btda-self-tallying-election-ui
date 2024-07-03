@@ -1,19 +1,21 @@
 import React, { useCallback, useState } from 'react';
 import { TextInput, Button, Group, Container, List, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
+import { useWeb3 } from '@/contexts/Web3Context';
 
 interface Candidate {
   name: string;
 }
 
 const RegisterPage = () => {
+  const { contract, accounts } = useWeb3();
   const [name, setName] = useState<string>('');
   const [candidates, setCandidates] = useState<Candidate[]>([]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!name || !contract || !accounts.length) {
+      if (!name || !contract || !accounts?.length) {
         return;
       }
       if (candidates.find((candidate) => candidate.name === name)) {
@@ -30,19 +32,23 @@ const RegisterPage = () => {
           .send({ from: accounts[0], gas: '1000000', gasPrice: 1000000000 });
         setCandidates([...candidates, { name }]);
         setName('');
-        showNotification(
-          'Candidate registered',
-          `Candidate ${name} has been registered successfully!`,
-          'green'
-        );
+        notifications.show({
+          title: 'Candidate registered',
+          message: `Candidate ${name} registered successfully`,
+          color: 'blue',
+        });
       } catch (error) {
         const errorMessage = `Failed to register candidate ${name}: ${error}`;
         // eslint-disable-next-line no-console
         console.error('Error registering candidate', error);
-        showNotification('Registration failed', errorMessage, 'red');
+        notifications.show({
+          title: 'Registration failed',
+          message: errorMessage,
+          color: 'red',
+        });
       }
     },
-    [name, contract, accounts, candidates, showNotification]
+    [name, contract, accounts, candidates]
   );
 
   return (

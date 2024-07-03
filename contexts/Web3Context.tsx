@@ -7,12 +7,16 @@ interface Web3ContextType {
   web3: any | undefined;
   accounts: string[] | undefined;
   contract: any | undefined;
+  selectedAccount: string | undefined;
+  setSelectedAccount: (account: string) => void;
 }
 
 const Web3Context = createContext<Web3ContextType>({
   web3: undefined,
   accounts: undefined,
   contract: undefined,
+  selectedAccount: undefined,
+  setSelectedAccount: () => {},
 });
 
 interface Web3ProviderProps {
@@ -20,9 +24,10 @@ interface Web3ProviderProps {
 }
 
 export const Web3Provider = ({ children }: Web3ProviderProps) => {
+  const [web3, setWeb3] = useState<any>(null);
   const [accounts, setAccounts] = useState<string[]>([]);
   const [contract, setContract] = useState<any>(null);
-  const [web3, setWeb3] = useState<any>(null);
+  const [selectedAccount, setSelectedAccount] = useState<string>('');
 
   useEffect(() => {
     const initWeb3 = async () => {
@@ -52,7 +57,9 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
   }, []);
 
   return (
-    <Web3Context.Provider value={{ web3, accounts, contract }}>{children}</Web3Context.Provider>
+    <Web3Context.Provider value={{ web3, accounts, contract, selectedAccount, setSelectedAccount }}>
+      {children}
+    </Web3Context.Provider>
   );
 };
 
