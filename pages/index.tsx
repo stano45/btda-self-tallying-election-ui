@@ -24,7 +24,7 @@ export default function HomePage() {
   }, [accounts]);
 
   const handleAccountChange = useCallback((value: string | null | undefined) => {
-    if (value === null) {
+    if (!value) {
       return;
     }
     setSelectedAccount(value);

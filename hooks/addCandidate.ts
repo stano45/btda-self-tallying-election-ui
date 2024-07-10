@@ -2,30 +2,31 @@ import { useState, useCallback } from 'react';
 import { notifications } from '@mantine/notifications';
 import { useWeb3 } from '@/contexts/Web3Context';
 
-export const useSubmitVote = () => {
+export const useAddCandidate = () => {
   const { contract, selectedAccount } = useWeb3();
   const [loading, setLoading] = useState<boolean>(false);
-  const submitVote = useCallback(
-    async (candidateId: number, vote: boolean): Promise<boolean> => {
+
+  const addCandidate = useCallback(
+    async (name: string): Promise<boolean> => {
       if (!contract || !selectedAccount) return false;
 
       setLoading(true);
       try {
         await contract.methods
-          .vote(candidateId, vote)
+          .addCandidate(name)
           .send({ from: selectedAccount, gas: '1000000', gasPrice: 1000000000 });
         notifications.show({
-          title: 'Vote Submitted',
-          message: 'Your vote has been submitted successfully',
-          color: 'green',
+          title: 'Registration successful',
+          message: `Candidate ${name} registered successfully`,
+          color: 'blue',
         });
         return true;
       } catch (error: any) {
         // eslint-disable-next-line no-console
-        console.error('Error submitting vote:', error);
+        console.error('Error registering candidate', error);
         notifications.show({
-          title: 'Vote Submission Failed',
-          message: `Failed to submit vote: ${error.message}`,
+          title: 'Registration failed',
+          message: `Failed to register candidate ${name}: ${error}`,
           color: 'red',
         });
         return false;
@@ -36,5 +37,5 @@ export const useSubmitVote = () => {
     [contract, selectedAccount]
   );
 
-  return { submitVote, loading };
+  return { addCandidate, loading };
 };

@@ -1,27 +1,26 @@
-import React from 'react';
-import { Button, Container, Title } from '@mantine/core';
-import { useSubmitVote } from '@/hooks/useSubmitVote';
+import { useEffect } from 'react';
+import router from 'next/router';
+import { useWeb3 } from '@/contexts/Web3Context';
+import { VotingStatus } from '@/types';
 
 const VoterPage = () => {
-  //   useEffect(() => {
-  //     router.push('/voter/vote');
-  //   });
-  // eslint-disable-next-line no-console
-  console.log('VoterPage');
-  const { submitVote, loading } = useSubmitVote();
-  const handleVote = (candidateId: number, vote: boolean) => {
-    submitVote(candidateId, vote);
-  };
-  return (
-    <Container>
-      <Title order={2} my="lg">
-        Voter Page
-      </Title>
-      <Button type="button" onClick={() => handleVote(1, true)}>
-        Vote Yes
-      </Button>
-    </Container>
-  );
+  const { votingStatus } = useWeb3();
+  useEffect(() => {
+    switch (votingStatus) {
+      case VotingStatus.Pre:
+        router.push('/voter/pre');
+        break;
+      case VotingStatus.Vote:
+        router.push('/voter/vote');
+        break;
+      case VotingStatus.Post:
+        router.push('/voter/post');
+        break;
+      default:
+        router.push('/voter/pre');
+        break;
+    }
+  }, [votingStatus]);
 };
 
 export default VoterPage;
