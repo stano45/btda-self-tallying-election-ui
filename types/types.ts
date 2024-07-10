@@ -19,11 +19,18 @@ export type PublicKey = curve.base.BasePoint;
 export type PrivateKey = BN;
 
 export interface KeyPair {
-    publicKey: PublicKey;
-    privateKey: PrivateKey;
+  publicKey: PublicKey;
+  privateKey: PrivateKey;
 }
 
 export interface DerivedKey {
-    x: BN;
-    y: BP;
+  x: BN;
+  y: BP;
+}
+
+export interface VoterKeys {
+  xs: BN[];
+  ys: BP[];
+  randKeys: BP[];
+  randVoteKeys: BP[][];
 }

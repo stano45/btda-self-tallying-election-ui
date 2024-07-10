@@ -23,6 +23,7 @@ interface CandidateVote {
 const VotingPage = () => {
   const { candidates } = useGetCandidates();
   const { submitVote, loading } = useSubmitVote();
+
   const [selectedVote, setSelectedVote] = useState<CandidateVote>();
 
   const handleVoteChange = useCallback(
