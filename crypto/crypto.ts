@@ -1,25 +1,12 @@
-import { ec as EC, curve } from 'elliptic';
+import { ec as EC } from 'elliptic';
 import secureRandom from 'secure-random';
 import BN from 'bn.js';
 
 import abi from 'ethereumjs-abi';
 import { keccak256 } from 'ethereumjs-util';
+import { DerivedKey, KeyPair, PrivateKey, PublicKey } from '@/types';
 
 const group = new EC('p256');
-
-type BP = curve.base.BasePoint;
-type PublicKey = curve.base.BasePoint;
-type PrivateKey = BN;
-
-interface KeyPair {
-    publicKey: PublicKey;
-    privateKey: PrivateKey;
-}
-
-interface DerivedKey {
-    x: BN;
-    y: BP;
-}
 
 export function keyGen(): KeyPair {
     const key = group.genKeyPair();

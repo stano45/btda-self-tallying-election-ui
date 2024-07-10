@@ -2,9 +2,11 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Select, Button, Container, Title } from '@mantine/core';
 import router from 'next/router';
 import { useWeb3 } from '@/contexts/Web3Context';
+import { useCrypto } from '@/contexts/CryptoContext';
 
 export default function HomePage() {
   const { accounts, setSelectedAccount: setAccountContext } = useWeb3();
+  const { keyPair } = useCrypto();
   const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
 
   const accountsData = useMemo(() => {
