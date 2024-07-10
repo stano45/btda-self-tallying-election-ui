@@ -7,14 +7,18 @@ import { keccak256 } from 'ethereumjs-util';
 
 const group = new EC('p256');
 
+type BP = curve.base.BasePoint;
+type PublicKey = curve.base.BasePoint;
+type PrivateKey = BN;
+
 interface KeyPair {
-    publicKey: curve.base.BasePoint;
-    privateKey: BN;
+    publicKey: PublicKey;
+    privateKey: PrivateKey;
 }
 
 interface DerivedKey {
     x: BN;
-    y: curve.base.BasePoint;
+    y: BP;
 }
 
 export function keyGen(): KeyPair {
@@ -32,7 +36,7 @@ export function getRand(): BN {
     return new BN(buf).mod(group.n);
 }
 
-export function keyDerive(privateKey: BN, candidateId: number): DerivedKey {
+export function keyDerive(privateKey: PrivateKey, candidateId: number): DerivedKey {
     if (!group.n) {
         throw new Error('Group is not initialized');
     }
@@ -43,4 +47,16 @@ export function keyDerive(privateKey: BN, candidateId: number): DerivedKey {
     x = x.mod(group.n);
     const y = group.g.mul(x);
     return { x, y }; // x_i -- BigNumber, y_i -- point on elliptic curve
+}
+
+export function getW(publicKeys: PublicKey[], i: number) {
+    let W_top = group.g.add(group.g.neg());
+    let W_bot = group.g.add(group.g.neg());
+    for (let j = 0; j < i; j += 1) {
+        W_top = W_top.add(publicKeys[j]);
+    }
+    for (let j = i + 1; j < publicKeys.length; j += 1) {
+        W_bot = W_bot.add(publicKeys[j]);
+    }
+    return W_top.add(W_bot.neg());
 }
