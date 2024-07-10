@@ -60,3 +60,13 @@ export function getW(publicKeys: PublicKey[], i: number) {
     }
     return W_top.add(W_bot.neg());
 }
+
+export function toPos(n: BN) {
+    if (!group.n) {
+        throw new Error('Group is not initialized');
+    }
+    if (n.isNeg()) {
+        n = n.add(group.n);
+    }
+    return n;
+}
