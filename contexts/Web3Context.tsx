@@ -39,6 +39,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
         const web3Instance = new Web3('http://127.0.0.1:8545'); // Connect to local Ganache
         const ethAccounts = await web3Instance.eth.getAccounts();
         const networkId = await web3Instance.eth.net.getId();
+        // @ts-ignore
         const deployedNetwork = YesNoVoting.networks[networkId];
         const instance = new web3Instance.eth.Contract(
           YesNoVoting.abi,
