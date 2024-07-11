@@ -34,3 +34,26 @@ export interface VoterKeys {
   randKeys: BP[];
   randVoteKeys: BP[][];
 }
+
+export interface ZKPoK1Result {
+  pi: (BN | BP)[];
+  X_new_new: BN;
+  Y_new: BP;
+}
+
+export interface ZKPoK2Result {
+  p_xi: BP;
+  p_xi_new: BP;
+  p_nu: BP;
+  p_nu_new: BP;
+  s_s_new: BN;
+  c: BN;
+}
+
+export interface CommitArgs {
+  xis: BP[];
+  nus: BP[];
+  proof1: (BN | BP)[][];
+  proof2: ZKPoK2Result;
+  w_i: BP;
+}
