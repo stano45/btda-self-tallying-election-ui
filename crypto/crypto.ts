@@ -177,3 +177,53 @@ export function ZKPoK1(
   }
   return { pi, X_new_new, Y_new };
 }
+
+export function ZKPoK2(
+  publicKeys: PublicKey[],
+  xis: BP[],
+  nus: BP[],
+  ss: BN[],
+  myNumber: number,
+  candidatesNumber: number
+) {
+  if (!group.n) {
+    throw new Error('Group is not initialized');
+  }
+  let s_sum = new BN(0);
+  const W = getW(publicKeys, myNumber);
+  for (let i = 0; i < candidatesNumber; i += 1) {
+    const s = getRand();
+    s_sum = s_sum.add(s).mod(group.n);
+  }
+  const p_xi_new = group.g.mul(s_sum);
+  const p_nu_new = W.mul(s_sum);
+  let p_xi = group.g.add(group.g.neg());
+  let p_nu = group.g.add(group.g.neg());
+  for (let i = 0; i < xis.length; i += 1) {
+    p_xi = p_xi.add(xis[i]);
+  }
+  for (let i = 0; i < nus.length; i += 1) {
+    p_nu = p_nu.add(nus[i]);
+  }
+  const data = [
+    p_xi.getX(),
+    p_xi.getY(),
+    p_xi_new.getX(),
+    p_xi_new.getY(),
+    p_nu.getX(),
+    p_nu.getY(),
+    p_nu_new.getX(),
+    p_nu_new.getY(),
+  ];
+  const input = abi.rawEncode(['uint[8]'], [data]);
+  const c = new BN(keccak256(input)).mod(group.n);
+  let s_ss = new BN(0);
+  for (let i = 0; i < ss.length; i += 1) {
+    s_ss = s_ss.add(ss[i]);
+  }
+  let s_s_new = s_sum.sub(c.mul(s_ss)).mod(group.n);
+  if (s_s_new.isNeg()) {
+    s_s_new = s_s_new.add(group.n);
+  }
+  return { p_xi, p_xi_new, p_nu, p_nu_new, s_s_new, c };
+}

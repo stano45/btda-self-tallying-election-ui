@@ -1,7 +1,7 @@
 import { ec as EC, curve } from 'elliptic';
 import BN from 'bn.js';
 
-import { keyGen, getRand, keyDerive, getW, toPos, ZKPoK1 } from './crypto';
+import { keyGen, getRand, keyDerive, getW, toPos, ZKPoK1, ZKPoK2 } from './crypto';
 
 describe('Crypto Functions', () => {
   const group = new EC('p256');
@@ -135,6 +135,55 @@ describe('Crypto Functions', () => {
 
       expect(result.pi).toHaveLength((maxScore - minScore + 1) * 4 + 3);
       expect(result.pi).toEqual(expect.arrayContaining(expectedPi));
+    });
+  });
+  describe('ZKPoK2', () => {
+    beforeEach(() => {
+      jest.mock('./crypto', () => ({
+        getRand: jest.fn(() => new BN('1234567890', 16).toRed(group.curve.red)),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        getW: jest.fn((_publicKeys, _myNumber) =>
+          group.keyFromPrivate('abcdef', 'hex').getPublic()
+        ),
+      }));
+    });
+
+    it('calculates the correct outputs with given inputs', () => {
+      const publicKeys = [
+        group.keyFromPrivate('abcdef', 'hex').getPublic(),
+        group.keyFromPrivate('123456', 'hex').getPublic(),
+      ];
+      const xis = [
+        group.keyFromPrivate('abcdef', 'hex').getPublic(),
+        group.keyFromPrivate('fedcba', 'hex').getPublic(),
+      ];
+      const nus = [
+        group.keyFromPrivate('abcdef', 'hex').getPublic(),
+        group.keyFromPrivate('fedcba', 'hex').getPublic(),
+      ];
+      const ss = [
+        new BN('1234567890abcdef', 16).toRed(group.curve.red),
+        new BN('9876543210abcdef', 16).toRed(group.curve.red),
+      ];
+      const myNumber = 1;
+      const candidatesNumber = 2;
+
+      const result = ZKPoK2(publicKeys, xis, nus, ss, myNumber, candidatesNumber);
+
+      expect(result).toHaveProperty('p_xi');
+      expect(result.p_xi).toBeInstanceOf(curve.base.BasePoint);
+
+      expect(result).toHaveProperty('p_xi_new');
+      expect(result.p_xi_new).toBeInstanceOf(curve.base.BasePoint);
+
+      expect(result).toHaveProperty('p_nu');
+      expect(result.p_nu).toBeInstanceOf(curve.base.BasePoint);
+
+      expect(result).toHaveProperty('p_nu_new');
+      expect(result.p_nu_new).toBeInstanceOf(curve.base.BasePoint);
+
+      expect(result).toHaveProperty('s_s_new');
+      expect(result).toHaveProperty('c');
     });
   });
 });
