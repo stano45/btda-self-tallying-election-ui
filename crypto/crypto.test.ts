@@ -166,7 +166,7 @@ describe('Crypto Functions', () => {
         new BN('9876543210abcdef', 16).toRed(group.curve.red),
       ];
       const myNumber = 1;
-      const candidatesNumber = 2;
+      const candidatesNumber = 10;
 
       const result = ZKPoK2(publicKeys, xis, nus, ss, myNumber, candidatesNumber);
 
