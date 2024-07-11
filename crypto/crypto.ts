@@ -94,3 +94,86 @@ export function getVoterKeys(
   }
   return { xs, ys, randKeys, randVoteKeys };
 }
+
+export function ZKPoK1(
+  privateKey: PrivateKey,
+  s: BN,
+  xi: BP,
+  nu: BP,
+  point: number,
+  j: number,
+  votersPublicKeys: PublicKey[],
+  myNumber: number,
+  minScore: number,
+  maxScore: number
+) {
+  if (!group.n) {
+    throw new Error('Group is not initialized');
+  }
+  const newKey = group.genKeyPair();
+  const X_new = newKey.getPrivate();
+  const Y_new = newKey.getPublic();
+  const rho = getRand();
+  const W_i = getW(votersPublicKeys, myNumber);
+  const es = [];
+  const ds = [];
+  const as = [];
+  const bs = [];
+  const data = [s, xi.getX(), xi.getY(), nu.getX(), nu.getY()];
+  for (let i = minScore; i <= maxScore; i += 1) {
+    const e_k = getRand();
+    const d_k = getRand();
+    let a_k;
+    let b_k;
+    if (i !== point) {
+      a_k = group.g.mul(e_k).add(xi.mul(d_k));
+      b_k = W_i.mul(e_k).add(nu.add(group.g.mul(point).neg()).mul(d_k));
+    } else {
+      a_k = group.g.mul(rho);
+      b_k = W_i.mul(rho);
+    }
+    es.push(e_k);
+    ds.push(d_k);
+    as.push(a_k);
+    bs.push(b_k);
+    data.push(a_k.getX());
+    data.push(a_k.getY());
+    data.push(b_k.getX());
+    data.push(b_k.getY());
+  }
+  const inputSize = (maxScore - minScore + 1) * 4 + 5;
+  const input = abi.rawEncode([`uint[${inputSize}]`], [data]);
+  let c = new BN(keccak256(input));
+  c = c.mod(group.n);
+  let dsum = new BN(0);
+  for (let i = minScore; i <= maxScore; i += 1) {
+    if (i !== point) {
+      dsum = dsum.add(ds[i - minScore]).mod(group.n);
+    }
+  }
+  let d_j = c.sub(dsum).mod(group.n);
+  if (d_j.isNeg()) {
+    d_j = d_j.add(group.n);
+  }
+  let e_j = rho.sub(s.mul(d_j)).mod(group.n);
+  if (e_j.isNeg()) {
+    e_j = e_j.add(group.n);
+  }
+  let X_new_new = X_new.sub(c.mul(privateKey).mod(group.n)).mod(group.n);
+  if (X_new_new.isNeg()) {
+    X_new_new = X_new_new.add(group.n);
+  }
+  const pi = [xi, nu, c];
+  for (let i = minScore; i <= maxScore; i += 1) {
+    pi.push(as[i - minScore]);
+    pi.push(bs[i - minScore]);
+    if (i !== point) {
+      pi.push(ds[i - minScore]);
+      pi.push(es[i - minScore]);
+    } else {
+      pi.push(d_j);
+      pi.push(e_j);
+    }
+  }
+  return { pi, X_new_new, Y_new };
+}
