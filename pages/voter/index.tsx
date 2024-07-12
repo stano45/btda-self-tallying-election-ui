@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import router from 'next/router';
-import { useWeb3 } from '@/contexts/Web3Context';
 import { VotingStatus } from '@/types';
+import { useWeb3 } from '@/contexts';
 
 const VoterPage = () => {
   const { votingStatus } = useWeb3();

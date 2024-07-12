@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { notifications } from '@mantine/notifications';
-import { useWeb3 } from '@/contexts/Web3Context';
 import { Candidate } from '@/types';
 import { transformCandidateFromApi } from '@/transformers/transformers';
+import { useWeb3 } from '@/contexts';
 
 export const useGetWinner = () => {
   const { contract } = useWeb3();

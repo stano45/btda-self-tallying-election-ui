@@ -6,9 +6,8 @@ import { AppShell, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
 import { theme } from '../theme';
-import { Web3Provider } from '@/contexts/Web3Context';
 import Header from '@/components/Header';
-import { CryptoProvider } from '@/contexts/CryptoContext';
+import { CryptoProvider, Web3Provider } from '@/contexts';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

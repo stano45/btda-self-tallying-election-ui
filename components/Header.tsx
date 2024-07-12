@@ -1,6 +1,6 @@
 import { AppShell, Text, Button, Group, Flex } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { useWeb3 } from '@/contexts/Web3Context';
+import { useWeb3 } from '@/contexts';
 
 function Header() {
   const { selectedAccount, setSelectedAccount } = useWeb3();

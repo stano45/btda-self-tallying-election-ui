@@ -3,7 +3,6 @@ import { TextInput, Button, Group, Container, List, Title, ScrollArea, Text } fr
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
-import { useWeb3 } from '@/contexts/Web3Context';
 import { Candidate } from '@/types';
 import {
   useAddCandidate,
@@ -11,6 +10,7 @@ import {
   useStartVotersRegistration,
   useStartVoting,
 } from '@/hooks';
+import { useWeb3 } from '@/contexts';
 
 const RegisterPage = () => {
   const { contract, accounts } = useWeb3();

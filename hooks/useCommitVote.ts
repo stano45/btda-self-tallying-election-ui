@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { notifications } from '@mantine/notifications';
-import { useWeb3 } from '@/contexts/Web3Context';
 import { CommitArgs } from '@/types';
 import { transformCommitArgsToSmartContract } from '@/transformers/transformers';
+import { useWeb3 } from '@/contexts';
 
 export const useCommitVote = () => {
   const { contract, selectedAccount } = useWeb3();
