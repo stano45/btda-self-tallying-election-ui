@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { notifications } from '@mantine/notifications';
-import { useWeb3 } from '@/contexts/Web3Context';
 import { Candidate } from '@/types';
+import { useWeb3 } from '@/contexts';
 
 export const useGetCandidates = () => {
   const { contract } = useWeb3();

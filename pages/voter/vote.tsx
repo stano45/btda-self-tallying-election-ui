@@ -3,113 +3,143 @@ import {
   Button,
   Container,
   Title,
-  RadioGroup,
-  Radio,
   Table,
   Text,
   Center,
   Divider,
+  NumberInput,
+  Group,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
-import { useSubmitVote } from '@/hooks/useSubmitVote';
-import { useGetCandidates } from '@/hooks/useGetCandidates';
+import { useGetCandidates, useSubmitVote } from '@/hooks';
 
 interface CandidateVote {
   candidateId: number;
-  vote: string;
+  points: number;
 }
+
+const TOTAL_POINTS = 10;
 
 const VotingPage = () => {
   const { candidates } = useGetCandidates();
   const { submitVote, loading } = useSubmitVote();
-  const [selectedVote, setSelectedVote] = useState<CandidateVote>();
 
-  const handleVoteChange = useCallback(
-    (candidateId: number | undefined, value: string) => {
-      if (!candidateId) {
+  const [votes, setVotes] = useState<CandidateVote[]>([]);
+  const [totalPoints, setTotalPoints] = useState<number>(0);
+
+  const maxPointsReached = totalPoints === TOTAL_POINTS;
+
+  const handlePointsChange = useCallback(
+    (candidateId?: number, points?: number) => {
+      if (
+        candidateId === undefined ||
+        points === undefined ||
+        points < 0 ||
+        points > TOTAL_POINTS
+      ) {
         return;
       }
-      setSelectedVote({ candidateId, vote: value });
+      setVotes((prevVotes) => {
+        const updatedVotes = prevVotes.map((vote) =>
+          vote.candidateId === candidateId ? { ...vote, points } : vote
+        );
+
+        if (!updatedVotes.find((vote) => vote.candidateId === candidateId)) {
+          updatedVotes.push({ candidateId, points });
+        }
+
+        const newTotalPoints = updatedVotes.reduce((acc, vote) => acc + vote.points, 0);
+
+        if (newTotalPoints > TOTAL_POINTS) {
+          return prevVotes;
+        }
+
+        setTotalPoints(newTotalPoints);
+        return updatedVotes;
+      });
     },
-    [selectedVote, setSelectedVote]
+    [setVotes, setTotalPoints]
   );
 
   const handleVoteSubmit = useCallback(async () => {
-    if (!selectedVote) {
+    if (totalPoints !== TOTAL_POINTS) {
       return;
     }
-    const success = await submitVote(selectedVote.candidateId, selectedVote.vote === 'yes');
+    const voteArray = votes.map((vote) => vote.points);
+    const success = await submitVote(voteArray);
     if (!success) {
       return;
     }
     router.push('/voter/waiting');
-  }, [selectedVote, router, submitVote]);
+  }, [votes, totalPoints, router, submitVote]);
 
-  const openModal = () =>
-    modals.openConfirmModal({
-      title: (
-        <Text size="sm" fw={500}>
-          Confirm Vote
-        </Text>
-      ),
-      children: <Text size="sm">Are you sure you want to submit your vote?</Text>,
-      labels: { confirm: 'Confirm', cancel: 'Cancel' },
-      onCancel: () => {},
-      onConfirm: () => handleVoteSubmit(),
-    });
+  const openModal = useCallback(
+    () =>
+      modals.openConfirmModal({
+        title: (
+          <Text size="sm" fw={500}>
+            Confirm Vote
+          </Text>
+        ),
+        children: <Text size="sm">Are you sure you want to submit your vote?</Text>,
+        labels: { confirm: 'Confirm', cancel: 'Cancel' },
+        onCancel: () => {},
+        onConfirm: () => handleVoteSubmit(),
+      }),
+    [handleVoteSubmit]
+  );
+
   return (
     <Container>
       <Title order={2} my="lg">
-        Please vote for the following candidate(s):
+        Please distribute your {TOTAL_POINTS} points among the following candidates:
       </Title>
       <Table>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Candidate</Table.Th>
-            <Table.Th>Yes</Table.Th>
-            <Table.Th>No</Table.Th>
+            <Table.Th>Points</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {candidates.map((candidate) => (
-            <Table.Tr key={candidate.id}>
-              <Table.Td>
-                <Text>{candidate.name}</Text>
-              </Table.Td>
-              <Table.Td>
-                <RadioGroup
-                  value={
-                    selectedVote?.candidateId === candidate.id && selectedVote?.vote === 'yes'
-                      ? 'yes'
-                      : ''
-                  }
-                  onChange={(value) => handleVoteChange(candidate.id, value)}
-                  style={{ display: 'flex', justifyContent: 'left' }}
-                >
-                  <Radio value="yes" />
-                </RadioGroup>
-              </Table.Td>
-              <Table.Td>
-                <RadioGroup
-                  value={
-                    selectedVote?.candidateId === candidate.id && selectedVote?.vote === 'no'
-                      ? 'no'
-                      : ''
-                  }
-                  onChange={(value) => handleVoteChange(candidate.id, value)}
-                  style={{ display: 'flex', justifyContent: 'left' }}
-                >
-                  <Radio value="no" />
-                </RadioGroup>
-              </Table.Td>
-            </Table.Tr>
-          ))}
+          {candidates.map((candidate) => {
+            const candidateVote =
+              votes.find((vote) => vote.candidateId === candidate.id)?.points || 0;
+            return (
+              <Table.Tr key={candidate.id}>
+                <Table.Td>
+                  <Text>{candidate.name}</Text>
+                </Table.Td>
+                <Table.Td>
+                  <NumberInput
+                    min={0}
+                    max={maxPointsReached ? candidateVote : TOTAL_POINTS}
+                    value={candidateVote}
+                    onChange={(value) => handlePointsChange(candidate.id, value as number)}
+                    style={{ width: 100 }}
+                  />
+                </Table.Td>
+              </Table.Tr>
+            );
+          })}
         </Table.Tbody>
       </Table>
       <Divider my="lg" />
       <Center my="lg">
-        <Button type="button" color="green" onClick={openModal} disabled={!selectedVote || loading}>
+        <Group>
+          <Text>
+            Total points spent: {totalPoints}/{TOTAL_POINTS}
+          </Text>
+        </Group>
+      </Center>
+      <Center my="lg">
+        <Button
+          type="button"
+          color="green"
+          onClick={openModal}
+          disabled={totalPoints !== TOTAL_POINTS || loading}
+        >
           Submit Vote
         </Button>
       </Center>

@@ -3,11 +3,14 @@ import { TextInput, Button, Group, Container, List, Title, ScrollArea, Text } fr
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
-import { useWeb3 } from '@/contexts/Web3Context';
 import { Candidate } from '@/types';
-import { useGetCandidates } from '@/hooks/useGetCandidates';
-import { useStartVoting } from '@/hooks/useStartVoting';
-import { useAddCandidate } from '@/hooks/addCandidate';
+import {
+  useAddCandidate,
+  useGetCandidates,
+  useStartVotersRegistration,
+  useStartVoting,
+} from '@/hooks';
+import { useWeb3 } from '@/contexts';
 
 const RegisterPage = () => {
   const { contract, accounts } = useWeb3();
@@ -19,9 +22,15 @@ const RegisterPage = () => {
     reload: reloadCandidates,
     loading: getCandidatesLoading,
   } = useGetCandidates();
+  const { startVotersRegistration, loading: startVotersRegistrationLoading } =
+    useStartVotersRegistration();
   const { startVoting, loading: startVotingLoading } = useStartVoting();
   const { addCandidate, loading: addCandidateLoading } = useAddCandidate();
-  const loading = getCandidatesLoading || startVotingLoading || addCandidateLoading;
+  const loading =
+    getCandidatesLoading ||
+    startVotingLoading ||
+    addCandidateLoading ||
+    startVotersRegistrationLoading;
 
   useEffect(() => {
     if (registeredCandidates) {
@@ -54,8 +63,9 @@ const RegisterPage = () => {
   );
 
   const handleStartVoting = useCallback(async () => {
-    const result = await startVoting();
-    if (result) {
+    const votersRegistrationResult = await startVotersRegistration();
+    const startVotingResult = await startVoting();
+    if (startVotingResult && votersRegistrationResult) {
       router.push('/admin/waiting');
     }
   }, [startVoting]);
