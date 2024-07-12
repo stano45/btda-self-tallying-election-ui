@@ -6,13 +6,13 @@ export const useSubmitVote = () => {
   const { contract, selectedAccount } = useWeb3();
   const [loading, setLoading] = useState<boolean>(false);
   const submitVote = useCallback(
-    async (candidateId: number, vote: boolean): Promise<boolean> => {
+    async (votes: number[]): Promise<boolean> => {
       if (!contract || !selectedAccount) return false;
 
       setLoading(true);
       try {
         await contract.methods
-          .vote(candidateId, vote)
+          .vote(votes)
           .send({ from: selectedAccount, gas: '1000000', gasPrice: 1000000000 });
         notifications.show({
           title: 'Vote Submitted',

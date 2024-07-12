@@ -30078,12 +30078,12 @@
     "1720792141443": {
       "events": {},
       "links": {},
-      "address": "0x06f0270e64E9868a2172D5E3B65dd668cB15B3Db",
-      "transactionHash": "0xbea9748380e5f604cb2cdfde7a8ae7bde80e569b293e7b44ae99fff44766d22e"
+      "address": "0xA604462a40835B54646b48506983A7a7d148A422",
+      "transactionHash": "0xd2404f658e13cc6eff2817f0e117039b35750dc2dc5e28bd5b235a8f98ddc6d5"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-07-12T14:11:01.451Z",
+  "updatedAt": "2024-07-12T17:27:28.313Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

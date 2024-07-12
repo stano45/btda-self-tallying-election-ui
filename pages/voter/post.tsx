@@ -1,8 +1,14 @@
 import { Center, Container, Table, Title } from '@mantine/core';
-import { useGetWinner } from '@/hooks/useGetWinner';
+import { Candidate } from '@/types';
 
 const PostVoting = () => {
-  const { winner } = useGetWinner();
+  // const { winner } = useGetWinner();
+  const winner: Candidate = {
+    id: 123,
+    name: 'sample candidate',
+    yesVotes: 123,
+    noVotes: 456,
+  };
   return (
     <Container>
       <Title>Election Result</Title>
