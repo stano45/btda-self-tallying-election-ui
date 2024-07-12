@@ -16,7 +16,7 @@ import {
   ZKPoK2Result,
 } from '@/types';
 
-const GROUP = new EC('p256');
+const GROUP = new EC('secp256k1');
 const MIN_SCORE = 0;
 const MAX_SCORE = 5;
 
