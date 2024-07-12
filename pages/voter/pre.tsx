@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { Container, List, ScrollArea, Title } from '@mantine/core';
 import router from 'next/router';
-import { useGetCandidates } from '@/hooks/useGetCandidates';
 import { VotingStatus } from '@/types';
 import { useWeb3 } from '@/contexts/Web3Context';
+import { useGetCandidates } from '@/hooks';
 
 const PreVoting = () => {
   const { votingStatus } = useWeb3();

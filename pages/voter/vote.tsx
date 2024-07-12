@@ -12,8 +12,7 @@ import {
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
-import { useSubmitVote } from '@/hooks/useSubmitVote';
-import { useGetCandidates } from '@/hooks/useGetCandidates';
+import { useGetCandidates, useSubmitVote } from '@/hooks';
 
 interface CandidateVote {
   candidateId: number;

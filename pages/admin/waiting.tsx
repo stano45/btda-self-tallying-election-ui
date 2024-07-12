@@ -4,7 +4,7 @@ import { modals } from '@mantine/modals';
 import { Button, Center, Container, Title, Text } from '@mantine/core';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { VotingStatus } from '@/types';
-import { useEndVoting } from '@/hooks/useEndVoting';
+import { useEndVoting } from '@/hooks';
 
 const Waiting = () => {
   const { votingStatus } = useWeb3();

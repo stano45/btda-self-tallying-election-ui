@@ -5,10 +5,12 @@ import { modals } from '@mantine/modals';
 import router from 'next/router';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { Candidate } from '@/types';
-import { useGetCandidates } from '@/hooks/useGetCandidates';
-import { useStartVoting } from '@/hooks/useStartVoting';
-import { useAddCandidate } from '@/hooks/addCandidate';
-import { useStartVotersRegistration } from '@/hooks/usestartVotersRegistration';
+import {
+  useAddCandidate,
+  useGetCandidates,
+  useStartVotersRegistration,
+  useStartVoting,
+} from '@/hooks';
 
 const RegisterPage = () => {
   const { contract, accounts } = useWeb3();
