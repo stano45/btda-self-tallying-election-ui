@@ -17,7 +17,7 @@
     "test": "npm run prettier:check && npm run lint && npm run typecheck && npm run jest",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
-    "migrate": "cd ../btda-self-tallying-election && truffle migrate && cp ../btda-self-tallying-election/build/contracts/YesNoVoting.json ../btda-self-tallying-election-ui/contracts",
+    "migrate": "cd ../btda-self-tallying-election && truffle migrate && cp ../btda-self-tallying-election/build/contracts/YesNoVoting.json ../btda-self-tallying-election-ui/contracts && cp ../btda-self-tallying-election/build/contracts/ScoreVoting.json ../btda-self-tallying-election-ui/contracts",
     "ganache": "ganache-cli"
   },
   "dependencies": {

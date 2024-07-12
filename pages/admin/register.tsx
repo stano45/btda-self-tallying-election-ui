@@ -8,6 +8,7 @@ import { Candidate } from '@/types';
 import { useGetCandidates } from '@/hooks/useGetCandidates';
 import { useStartVoting } from '@/hooks/useStartVoting';
 import { useAddCandidate } from '@/hooks/addCandidate';
+import { useStartVotersRegistration } from '@/hooks/usestartVotersRegistration';
 
 const RegisterPage = () => {
   const { contract, accounts } = useWeb3();
@@ -19,9 +20,15 @@ const RegisterPage = () => {
     reload: reloadCandidates,
     loading: getCandidatesLoading,
   } = useGetCandidates();
+  const { startVotersRegistration, loading: startVotersRegistrationLoading } =
+    useStartVotersRegistration();
   const { startVoting, loading: startVotingLoading } = useStartVoting();
   const { addCandidate, loading: addCandidateLoading } = useAddCandidate();
-  const loading = getCandidatesLoading || startVotingLoading || addCandidateLoading;
+  const loading =
+    getCandidatesLoading ||
+    startVotingLoading ||
+    addCandidateLoading ||
+    startVotersRegistrationLoading;
 
   useEffect(() => {
     if (registeredCandidates) {
@@ -54,8 +61,9 @@ const RegisterPage = () => {
   );
 
   const handleStartVoting = useCallback(async () => {
-    const result = await startVoting();
-    if (result) {
+    const votersRegistrationResult = await startVotersRegistration();
+    const startVotingResult = await startVoting();
+    if (startVotingResult && votersRegistrationResult) {
       router.push('/admin/waiting');
     }
   }, [startVoting]);

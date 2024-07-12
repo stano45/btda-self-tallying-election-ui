@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import Web3 from 'web3';
 import { notifications } from '@mantine/notifications';
-import YesNoVoting from '../contracts/YesNoVoting.json';
+import ScoreVoting from '../contracts/ScoreVoting.json';
 import { VotingStatus } from '@/types';
 
 interface Web3ContextType {
@@ -40,16 +40,16 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
         const ethAccounts = await web3Instance.eth.getAccounts();
         const networkId = await web3Instance.eth.net.getId();
         // @ts-ignore
-        const deployedNetwork = YesNoVoting.networks[networkId];
+        const deployedNetwork = ScoreVoting.networks[networkId];
         const instance = new web3Instance.eth.Contract(
-          YesNoVoting.abi,
+          ScoreVoting.abi,
           deployedNetwork && deployedNetwork.address
         );
         const web3SocketInstance = new Web3(
           new Web3.providers.WebsocketProvider('ws://127.0.0.1:8545')
         );
         const socketContract = new web3SocketInstance.eth.Contract(
-          YesNoVoting.abi,
+          ScoreVoting.abi,
           deployedNetwork && deployedNetwork.address
         );
         socketContract.events.VotingStarted().on('data', () => {
