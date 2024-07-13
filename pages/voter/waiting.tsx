@@ -7,7 +7,7 @@ import { useWeb3 } from '@/contexts';
 const Waiting = () => {
   const { votingStatus } = useWeb3();
   useEffect(() => {
-    if (votingStatus === VotingStatus.Post) {
+    if (votingStatus === VotingStatus.End) {
       router.push('/voter/post');
     }
   }, [votingStatus]);

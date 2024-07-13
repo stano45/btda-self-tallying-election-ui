@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
-import { useGetCandidates, useSubmitVote } from '@/hooks';
+import { useCommitVote, useGetCandidates, useSubmitVote } from '@/hooks';
 
 interface CandidateVote {
   candidateId: number;
@@ -22,8 +22,10 @@ interface CandidateVote {
 const TOTAL_POINTS = 10;
 
 const VotingPage = () => {
-  const { candidates } = useGetCandidates();
-  const { submitVote, loading } = useSubmitVote();
+  const { candidates, loading: getCandidatesLoading } = useGetCandidates();
+  const { commitVote, loading: commitLoading } = useCommitVote();
+  const { submitVote, loading: submitLoading } = useSubmitVote();
+  const loading = commitLoading || submitLoading || getCandidatesLoading;
 
   const [votes, setVotes] = useState<CandidateVote[]>([]);
   const [totalPoints, setTotalPoints] = useState<number>(0);
@@ -67,7 +69,8 @@ const VotingPage = () => {
       return;
     }
     const voteArray = votes.map((vote) => vote.points);
-    const success = await submitVote(voteArray);
+    // const success = await submitVote(voteArray);
+    const success = await commitVote(voteArray);
     if (!success) {
       return;
     }

@@ -11,7 +11,7 @@ const Waiting = () => {
   const { endVoting, loading: endVotingLoading } = useEndVoting();
 
   useEffect(() => {
-    if (votingStatus === VotingStatus.Post) {
+    if (votingStatus === VotingStatus.End) {
       router.push('/voter/post');
     }
   }, [votingStatus]);

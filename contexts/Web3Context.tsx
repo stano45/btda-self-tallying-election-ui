@@ -19,7 +19,7 @@ const Web3Context = createContext<Web3ContextType>({
   contract: undefined,
   selectedAccount: undefined,
   setSelectedAccount: () => {},
-  votingStatus: VotingStatus.Pre,
+  votingStatus: VotingStatus.CandidateRegistration,
 });
 
 interface Web3ProviderProps {
@@ -31,7 +31,9 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
   const [accounts, setAccounts] = useState<string[]>([]);
   const [contract, setContract] = useState<any>(undefined);
   const [selectedAccount, setSelectedAccount] = useState<string>();
-  const [votingStatus, setVotingStatus] = useState<VotingStatus>(VotingStatus.Pre);
+  const [votingStatus, setVotingStatus] = useState<VotingStatus>(
+    VotingStatus.CandidateRegistration
+  );
 
   useEffect(() => {
     const initWeb3 = async () => {
@@ -66,7 +68,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
             message: 'Voting has ended!',
             color: 'blue',
           });
-          setVotingStatus(VotingStatus.Post);
+          setVotingStatus(VotingStatus.End);
         });
         socketContract.events.VoteSubmitted().on('data', (eventData: any) => {
           // eslint-disable-next-line no-console

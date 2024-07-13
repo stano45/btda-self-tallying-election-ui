@@ -9,6 +9,8 @@ import {
   CommitArgs,
   DerivedKey,
   KeyPair,
+  PiArrayElement,
+  PiType,
   PrivateKey,
   PublicKey,
   VoterKeys,
@@ -175,17 +177,24 @@ export function ZKPoK1(
   if (X_new_new.isNeg()) {
     X_new_new = X_new_new.add(GROUP.n);
   }
-  const pi = [xi, nu, c];
+  const pi: PiType = {
+    xi,
+    nu,
+    c,
+    piArray: [],
+  };
   for (let i = minScore; i <= maxScore; i += 1) {
-    pi.push(as[i - minScore]);
-    pi.push(bs[i - minScore]);
-    if (i !== point) {
-      pi.push(ds[i - minScore]);
-      pi.push(es[i - minScore]);
-    } else {
-      pi.push(d_j);
-      pi.push(e_j);
+    const piArrayElement: PiArrayElement = {
+      a: as[i - minScore],
+      b: bs[i - minScore],
+      d: ds[i - minScore],
+      e: es[i - minScore],
+    };
+    if (i === point) {
+      piArrayElement.d = d_j;
+      piArrayElement.e = e_j;
     }
+    pi.piArray.push(piArrayElement);
   }
   return { pi, X_new_new, Y_new };
 }
@@ -269,7 +278,7 @@ export function getCommitArgs(
     C.push({ xi, nu });
   }
 
-  const proof1 = [];
+  const proof1: PiType[] = [];
   for (let i = 0; i < numCandidates; i += 1) {
     const { pi } = ZKPoK1(
       privateKey,
