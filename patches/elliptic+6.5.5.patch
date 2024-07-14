@@ -1,0 +1,11 @@
+diff --git a/node_modules/elliptic/lib/elliptic/curves.js b/node_modules/elliptic/lib/elliptic/curves.js
+index 6c36e03..b8b2b9a 100644
+--- a/node_modules/elliptic/lib/elliptic/curves.js
++++ b/node_modules/elliptic/lib/elliptic/curves.js
+@@ -204,3 +204,5 @@ defineCurve('secp256k1', {
+     pre,
+   ],
+ });
++
++defineCurve('bn256', { type: 'short', prime: null, p: '30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47', a: '0', b: '3', n: '30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001', hash: hash.sha256, gRed: false, g: [ '2bd3e6d0f3b142924f5ca7b49ce5b9d54c4703d7ae5648e61d02268b1a0a9fb7', '21611ce0a6af85915e2f1d70300909ce2e49dfad4a4619c8390cae66cefdb204' ] });
+\ No newline at end of file

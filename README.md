@@ -1,19 +1,14 @@
-# Mantine Next.js template
+# Self-Tallying Election UI
+This is the UI for: https://github.com/stano45/btda-self-tallying-election
 
-This is a template for [Next.js](https://nextjs.org/) pages router + [Mantine](https://mantine.dev/).
-If you want to use app router instead, see [next-app-template](https://github.com/mantinedev/next-app-template).
+## Install & Run
+```bash
+yarn
+yarn dev
+```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Features
-
-This template comes with the following features:
-
-- [PostCSS](https://postcss.org/) with [mantine-postcss-preset](https://mantine.dev/styles/postcss-preset)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Storybook](https://storybook.js.org/)
-- [Jest](https://jestjs.io/) setup with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro)
-- ESLint setup with [eslint-config-mantine](https://github.com/mantinedev/eslint-config-mantine)
-
-## npm scripts
+## yarn scripts
 
 ### Build and dev scripts
 
@@ -33,6 +28,4 @@ This template comes with the following features:
 
 ### Other scripts
 
-- `storybook` – starts storybook dev server
-- `storybook:build` – build production storybook bundle to `storybook-static`
 - `prettier:write` – formats all files with Prettier
