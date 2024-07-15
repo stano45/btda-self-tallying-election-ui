@@ -4,8 +4,8 @@ import BN from 'bn.js';
 import { ec as EC } from 'elliptic';
 import { useCrypto, useWeb3 } from '@/contexts';
 import { getCommitArgs } from '@/crypto/crypto';
-
-const MY_NUMBER = 1;
+import { transformCommitArgsToApi } from '@/transformers/transformers';
+import { BP } from '@/types';
 
 export const useCommitVote = () => {
   const { contract, selectedAccount } = useWeb3();
@@ -28,33 +28,22 @@ export const useCommitVote = () => {
         const pubKeysBN = await contract.methods
           .getVoterPublicKeys()
           .call({ from: selectedAccount.name, gas: '1000000', gasPrice: '1000000000' });
+        console.log('Public keys:', pubKeysBN);
+        const ec = new EC('bn256');
+        const pkBasePoints: BP[] = pubKeysBN.map((key: BN[]) => ec.curve.point(key[0], key[1]));
 
-        // Check if pubKeysBN is an array and has even number of elements
-        if (!Array.isArray(pubKeysBN) || pubKeysBN.length % 2 !== 0) {
-          throw new Error('Public keys array is invalid or malformed');
-        }
-
-        const pkBasePoints = [];
-        for (let i = 0; i < pubKeysBN.length; i += 2) {
-          const x = new BN(pubKeysBN[i], 16);
-          const y = new BN(pubKeysBN[i + 1], 16);
-
-          const ec = new EC('bn256');
-          const basePoint = ec.curve.point(x, y);
-          pkBasePoints.push(basePoint);
-        }
-        console.log('Public keys:', pkBasePoints);
         const args = getCommitArgs(
           keyPair?.privateKey,
           votes,
           pkBasePoints,
-          MY_NUMBER,
+          selectedAccount.index,
           votes.length
         );
-        args;
-        // TODO
+        console.log('Commit args:', args);
+        const apiArgs = transformCommitArgsToApi(args);
+        console.log('Committing vote:', apiArgs);
         await contract.methods
-          .commitVote()
+          .commitVote(apiArgs.xis, apiArgs.nus, apiArgs.proof1, apiArgs.proof2, apiArgs.W_i)
           .send({ from: selectedAccount.name, gas: '1000000', gasPrice: 1000000000 });
         notifications.show({
           title: 'Vote Committed',
@@ -64,7 +53,7 @@ export const useCommitVote = () => {
         return true;
       } catch (error: any) {
         // eslint-disable-next-line no-console
-        console.error('Error committing vote:', error.message);
+        console.error('Error committing vote:', error);
         notifications.show({
           title: 'Vote Commit Failed',
           message: `Failed to commit vote: ${error.message}`,
@@ -75,7 +64,7 @@ export const useCommitVote = () => {
         setLoading(false);
       }
     },
-    [contract, selectedAccount]
+    [contract, keyPair, selectedAccount]
   );
 
   return { commitVote, loading };

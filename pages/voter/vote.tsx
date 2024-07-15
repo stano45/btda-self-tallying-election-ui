@@ -22,7 +22,7 @@ interface CandidateVote {
   points: number;
 }
 
-const TOTAL_POINTS = 10;
+const TOTAL_POINTS = 5;
 
 const VotingPage = () => {
   const { votingStatus } = useWeb3();

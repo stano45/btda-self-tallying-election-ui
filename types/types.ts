@@ -59,8 +59,8 @@ export interface ZKPoK2Result {
 }
 
 export interface CommitArgs {
-  xis: BN[];
-  nus: BN[];
+  xis: BP[];
+  nus: BP[];
   proof1: BN[][];
   proof2: ZKPoK2Result;
   w_i: BP;

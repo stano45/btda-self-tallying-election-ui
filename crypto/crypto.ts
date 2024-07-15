@@ -31,7 +31,7 @@ export function keyDerive(privateKey: PrivateKey, candidateId: number): DerivedK
   }
   const r = getRand();
   const data = [privateKey, candidateId, r];
-  const input = abi.rawEncode(['uint256[3]'], [data]);
+  const input = abi.rawEncode(['uint[3]'], [data]);
   let x = new BN(keccak256(input));
   x = x.mod(GROUP.n);
   const y = GROUP.g.mul(x);
@@ -85,7 +85,18 @@ export function ZKPoK1(
   if (!GROUP.n) {
     throw new Error('Group is not initialized');
   }
-
+  console.log('Called ZKPoK1', {
+    privateKey,
+    s,
+    xi,
+    nu,
+    point,
+    j,
+    votersPublicKeys,
+    myNumber,
+    minScore,
+    maxScore,
+  });
   const newKey = GROUP.genKeyPair();
   const X_new = newKey.getPrivate();
   const Y_new = newKey.getPublic();
@@ -96,6 +107,7 @@ export function ZKPoK1(
   const as = [];
   const bs = [];
   const data = [s, xi.getX(), xi.getY(), nu.getX(), nu.getY()];
+
   for (let i = minScore; i <= maxScore; i += 1) {
     const e_k = getRand();
     const d_k = getRand();
@@ -108,6 +120,16 @@ export function ZKPoK1(
       a_k = GROUP.g.mul(rho);
       b_k = W_i.mul(rho);
     }
+    console.log('here', {
+      i,
+      rho,
+      W_i,
+      a_k,
+      b_k,
+      d_k,
+      e_k,
+    });
+
     es.push(e_k);
     ds.push(d_k);
     as.push(a_k);
@@ -213,6 +235,16 @@ export function getCommitArgs(
   myNumber: number,
   numCandidates: number
 ): CommitArgs {
+  if (!GROUP.n) {
+    throw new Error('Group is not initialized');
+  }
+  console.log('Called getCommitArgs', {
+    privateKey,
+    points,
+    votersPublicKeys,
+    myNumber,
+    numCandidates,
+  });
   // let A = group.g.add(group.g.neg())
   // for (let i = 0; i < votersPublicKeys.length; i += 1) {
   //     if (i !== myNumber) {
@@ -224,7 +256,7 @@ export function getCommitArgs(
   const xis = [];
   const nus = [];
   const C = [];
-  const w_i = getW(votersPublicKeys, myNumber);
+  const W_i = getW(votersPublicKeys, myNumber);
   for (let i = 0; i < numCandidates; i += 1) {
     const s = getRand();
     const xi = GROUP.g.mul(s);
@@ -234,7 +266,7 @@ export function getCommitArgs(
     nus.push(nu);
     C.push({ xi, nu });
   }
-
+  console.log('C:', C);
   const proof1: BN[][] = [];
   for (let i = 0; i < numCandidates; i += 1) {
     const pi = ZKPoK1(
@@ -250,38 +282,48 @@ export function getCommitArgs(
       MAX_SCORE
     );
     proof1.push(pi);
+    const c = pi[0];
+    const X_new_new = pi[1];
+    const Y_new = GROUP.curve.point(pi[2], pi[3]);
+    // check 1
+    let p_d = pi[7];
+    for (let k = 11; k < pi.length; k += 4) {
+      p_d = p_d.add(pi[k]).mod(GROUP.n);
+    }
+    console.log(`ZPK1 test 1 candidate ${i}: ${c.eq(p_d)}`);
 
-    // ---------------
-    // Verification
+    //check 3
+    let check2 = true;
+    for (let k = 5; k < pi.length; k += 4) {
+      const a = pi[k];
+      const d = pi[k + 2];
+      const e = pi[k + 3];
+      const ge = GROUP.g.mul(e);
+      const xid = C[i].xi.mul(d);
+      check2 = check2 && a.eq(ge.add(xid));
+    }
+    console.log(`ZPK1 test 2 candidate ${i}: ${check2}`);
+
+    // //check 3
     let check3 = true;
     for (let k = 6; k < pi.length; k += 6) {
       const b = GROUP.curve.point(pi[k], pi[k + 1]);
       const d = pi[k + 2];
       const e = pi[k + 3];
-      const we = w_i.mul(e);
+      const we = W_i.mul(e);
       const pointValue = Math.floor((k - 6) / 6);
       const nugd = C[i].nu.add(GROUP.g.mul(pointValue).neg()).mul(d);
       check3 = check3 && b.eq(we.add(nugd));
     }
     console.log(`ZPK1 test 3 candidate ${i}: ${check3}`);
-    const c = pi[0];
-    const X_new_new = pi[1];
-    const Y_new = GROUP.curve.point(pi[2], pi[3]);
+    //
+    //check 4
+    // console.log("Check priv pub: " + votersPublicKeys[number].eq(group.g.mul(privateKey)))
     console.log(
       `ZPK1 test 4 candidate ${i}: ${Y_new.eq(votersPublicKeys[myNumber].mul(c).add(GROUP.g.mul(X_new_new)))}`
     );
   }
   const proof2 = ZKPoK2(votersPublicKeys, xis, nus, ss, myNumber, numCandidates);
-
-  const xis_bn = [];
-  const nus_bn = [];
-  for (let j = 0; j < C.length; j += 1) {
-    xis_bn.push(C[j].xi.getX());
-    xis_bn.push(C[j].xi.getY());
-    nus_bn.push(C[j].nu.getX());
-    nus_bn.push(C[j].nu.getY());
-  }
-  const W_i = getW(votersPublicKeys, myNumber);
 
   return { xis, nus, proof1, proof2, w_i: W_i };
 }
