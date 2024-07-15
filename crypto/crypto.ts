@@ -38,7 +38,7 @@ export function keyDerive(privateKey: PrivateKey, candidateId: number): DerivedK
   return { x, y }; // x_i -- BigNumber, y_i -- point on elliptic curve
 }
 
-export function getW(publicKeys: PublicKey[], i: number) {
+export function getW(publicKeys: PublicKey[], i: number): BP {
   let W_top = GROUP.g.add(GROUP.g.neg());
   let W_bot = GROUP.g.add(GROUP.g.neg());
   for (let j = 0; j < i; j += 1) {
@@ -102,17 +102,17 @@ export function ZKPoK1(
   const Y_new = newKey.getPublic();
   const rho = getRand();
   const W_i = getW(votersPublicKeys, myNumber);
-  const es = [];
-  const ds = [];
-  const as = [];
-  const bs = [];
-  const data = [s, xi.getX(), xi.getY(), nu.getX(), nu.getY()];
+  const es: BN[] = [];
+  const ds: BN[] = [];
+  const as: BP[] = [];
+  const bs: BP[] = [];
+  const data: BN[] = [s, xi.getX(), xi.getY(), nu.getX(), nu.getY()];
 
   for (let i = minScore; i <= maxScore; i += 1) {
     const e_k = getRand();
     const d_k = getRand();
-    let a_k;
-    let b_k;
+    let a_k: BP;
+    let b_k: BP;
     if (i !== point) {
       a_k = GROUP.g.mul(e_k).add(xi.mul(d_k));
       b_k = W_i.mul(e_k).add(nu.add(GROUP.g.mul(i).neg()).mul(d_k));
@@ -161,7 +161,7 @@ export function ZKPoK1(
   if (X_new_new.isNeg()) {
     X_new_new = X_new_new.add(GROUP.n);
   }
-  const pi = [c, X_new_new, Y_new.getX(), Y_new.getY()];
+  const pi: BN[] = [c, X_new_new, Y_new.getX(), Y_new.getY()];
   for (let i = minScore; i <= maxScore; i += 1) {
     pi.push(as[i - minScore].getX());
     pi.push(as[i - minScore].getY());
@@ -252,10 +252,11 @@ export function getCommitArgs(
   //     }
   // }
   const A = getW(votersPublicKeys, myNumber);
-  const ss = [];
-  const xis = [];
-  const nus = [];
-  const C = [];
+  console.log('A:', A);
+  const ss: BN[] = [];
+  const xis: BP[] = [];
+  const nus: BP[] = [];
+  const C: { xi: BP; nu: BP }[] = [];
   const W_i = getW(votersPublicKeys, myNumber);
   for (let i = 0; i < numCandidates; i += 1) {
     const s = getRand();
@@ -300,6 +301,10 @@ export function getCommitArgs(
       const e = pi[k + 3];
       const ge = GROUP.g.mul(e);
       const xid = C[i].xi.mul(d);
+      console.log('Check 2 iteration', {
+        k,
+        res: a.eq(ge.add(xid)),
+      });
       check2 = check2 && a.eq(ge.add(xid));
     }
     console.log(`ZPK1 test 2 candidate ${i}: ${check2}`);
@@ -313,15 +318,19 @@ export function getCommitArgs(
       const we = W_i.mul(e);
       const pointValue = Math.floor((k - 6) / 6);
       const nugd = C[i].nu.add(GROUP.g.mul(pointValue).neg()).mul(d);
+      console.log('Check 3 iteration', {
+        k,
+        res: b.eq(we.add(nugd)),
+      });
       check3 = check3 && b.eq(we.add(nugd));
     }
     console.log(`ZPK1 test 3 candidate ${i}: ${check3}`);
     //
     //check 4
     // console.log("Check priv pub: " + votersPublicKeys[number].eq(group.g.mul(privateKey)))
-    console.log(
-      `ZPK1 test 4 candidate ${i}: ${Y_new.eq(votersPublicKeys[myNumber].mul(c).add(GROUP.g.mul(X_new_new)))}`
-    );
+    // console.log(
+    //   `ZPK1 test 4 candidate ${i}: ${Y_new.eq(votersPublicKeys[myNumber].mul(c).add(GROUP.g.mul(X_new_new)))}`
+    // );
   }
   const proof2 = ZKPoK2(votersPublicKeys, xis, nus, ss, myNumber, numCandidates);
 

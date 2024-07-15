@@ -2,9 +2,10 @@ import { useState, useCallback } from 'react';
 import { notifications } from '@mantine/notifications';
 import { useCrypto, useWeb3 } from '@/contexts';
 import { getVoterKeys } from '@/crypto/crypto';
+import { BNtoBase10String, BPtoBase10Array } from '@/transformers/transformers';
 
 export const useRegisterVoter = () => {
-  const { contract, selectedAccount, web3 } = useWeb3();
+  const { contract, selectedAccount } = useWeb3();
   const { keyPair } = useCrypto();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -14,14 +15,9 @@ export const useRegisterVoter = () => {
 
       setLoading(true);
       try {
-        const _pubKeys = [
-          keyPair?.publicKey.getX().toString(10),
-          keyPair?.publicKey.getY().toString(10),
-        ];
+        const _pubKeys = BPtoBase10Array(keyPair.publicKey);
         const voterKeys = getVoterKeys(keyPair, candidateCount);
-        const _pubKeyForCandidates = voterKeys.map((bn) =>
-          web3?.utils.numberToHex(bn.toString(10))
-        );
+        const _pubKeyForCandidates = voterKeys.map(BNtoBase10String);
 
         await contract.methods
           .registerVoter(_pubKeys, _pubKeyForCandidates)
@@ -47,7 +43,7 @@ export const useRegisterVoter = () => {
         setLoading(false);
       }
     },
-    [contract, keyPair, selectedAccount, web3?.utils]
+    [contract, keyPair, selectedAccount]
   );
 
   return { registerVoter, loading };
