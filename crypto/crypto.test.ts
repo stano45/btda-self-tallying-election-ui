@@ -4,7 +4,7 @@ import BN from 'bn.js';
 import { keyGen, getRand, keyDerive, getW, toPos, ZKPoK1, ZKPoK2, getCommitArgs } from './crypto';
 
 describe('Crypto Functions', () => {
-  const group = new EC('secp256k1');
+  const group = new EC('bn256');
 
   beforeEach(() => {
     jest.clearAllMocks();

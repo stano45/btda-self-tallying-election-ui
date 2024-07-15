@@ -12,7 +12,7 @@ import {
 } from '@/hooks';
 import { useWeb3 } from '@/contexts';
 
-const RegisterPage = () => {
+const RegisterCandidatesPage = () => {
   const { contract, accounts } = useWeb3();
   const [name, setName] = useState<string>('');
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -62,11 +62,10 @@ const RegisterPage = () => {
     [name, contract, accounts, candidates]
   );
 
-  const handleStartVoting = useCallback(async () => {
+  const handleSubmitCandidates = useCallback(async () => {
     const votersRegistrationResult = await startVotersRegistration();
-    const startVotingResult = await startVoting();
-    if (startVotingResult && votersRegistrationResult) {
-      router.push('/admin/waiting');
+    if (votersRegistrationResult) {
+      router.push('/admin/registerVoters');
     }
   }, [startVoting]);
 
@@ -74,13 +73,13 @@ const RegisterPage = () => {
     modals.openConfirmModal({
       title: (
         <Text size="sm" fw={500}>
-          Confirm Election Start
+          Confirm Submit Candidates
         </Text>
       ),
-      children: <Text size="sm">Are you sure you want to start the election?</Text>,
+      children: <Text size="sm">Are you sure you want to submit this candidate list?</Text>,
       labels: { confirm: 'Confirm', cancel: 'Cancel' },
       onCancel: () => {},
-      onConfirm: () => handleStartVoting(),
+      onConfirm: () => handleSubmitCandidates(),
     });
 
   return (
@@ -120,7 +119,7 @@ const RegisterPage = () => {
         </ScrollArea.Autosize>
         <Group mt="lg" justify="center">
           <Button loading={loading} onClick={openModal} disabled={!candidates.length} color="green">
-            Start Election
+            Submit Candidates
           </Button>
         </Group>
       </Container>
@@ -128,4 +127,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default RegisterCandidatesPage;

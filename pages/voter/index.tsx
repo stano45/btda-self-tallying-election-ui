@@ -7,17 +7,20 @@ const VoterPage = () => {
   const { votingStatus } = useWeb3();
   useEffect(() => {
     switch (votingStatus) {
-      case VotingStatus.CandidateRegistration:
-        router.push('/voter/pre');
+      case VotingStatus.RegisterCandidates:
+        router.push('/voter/registerCandidates');
+        break;
+      case VotingStatus.RegisterVoters:
+        router.push('/voter/registerVoters');
         break;
       case VotingStatus.Vote:
         router.push('/voter/vote');
         break;
       case VotingStatus.End:
-        router.push('/voter/post');
+        router.push('/voter/results');
         break;
       default:
-        router.push('/voter/pre');
+        router.push('/voter/registerCandidates');
         break;
     }
   }, [votingStatus]);

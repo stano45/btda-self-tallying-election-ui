@@ -4,14 +4,14 @@ import router from 'next/router';
 import { useWeb3 } from '@/contexts';
 
 export default function HomePage() {
-  const { accounts, setSelectedAccount: setAccountContext } = useWeb3();
+  const { accounts, selectAccount: setAccountContext } = useWeb3();
   const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
 
   const accountsData = useMemo(() => {
     if (accounts) {
       return accounts.map((account, index) => ({
-        value: account,
-        label: index === 0 ? `${account} (admin)` : `${account} (${index})`,
+        value: account.name,
+        label: index === 0 ? `${account.name} (admin)` : `${account.name} (${index})`,
       }));
     }
     return [];
@@ -19,7 +19,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (accounts && accounts.length > 0) {
-      setSelectedAccount(accounts[0]);
+      setSelectedAccount(accounts[0].name);
     }
   }, [accounts]);
 
@@ -35,7 +35,7 @@ export default function HomePage() {
       return;
     }
     setAccountContext(selectedAccount);
-    if (accounts?.[0] === selectedAccount) {
+    if (accounts?.[0].name === selectedAccount) {
       router.push('/admin');
     } else {
       router.push('/voter');

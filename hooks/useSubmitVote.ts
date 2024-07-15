@@ -13,7 +13,7 @@ export const useSubmitVote = () => {
       try {
         await contract.methods
           .vote(votes)
-          .send({ from: selectedAccount, gas: '1000000', gasPrice: 1000000000 });
+          .send({ from: selectedAccount.name, gas: '1000000', gasPrice: 1000000000 });
         notifications.show({
           title: 'Vote Submitted',
           message: 'Your vote has been submitted successfully',

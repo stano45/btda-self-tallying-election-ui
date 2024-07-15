@@ -1,15 +1,16 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import Web3 from 'web3';
 import { notifications } from '@mantine/notifications';
+import { RegisteredSubscription } from 'web3/lib/commonjs/eth.exports';
 import ScoreVoting from '../contracts/ScoreVoting.json';
-import { VotingStatus } from '@/types';
+import { Account, VotingStatus } from '@/types';
 
 interface Web3ContextType {
-  web3: any | undefined;
-  accounts: string[] | undefined;
+  web3: Web3<RegisteredSubscription> | undefined;
+  accounts: Account[] | undefined;
   contract: any | undefined;
-  selectedAccount: string | undefined;
-  setSelectedAccount: (account: string | undefined) => void;
+  selectedAccount: Account | undefined;
+  selectAccount: (name: string | undefined) => void;
   votingStatus: VotingStatus;
 }
 
@@ -18,8 +19,8 @@ const Web3Context = createContext<Web3ContextType>({
   accounts: undefined,
   contract: undefined,
   selectedAccount: undefined,
-  setSelectedAccount: () => {},
-  votingStatus: VotingStatus.CandidateRegistration,
+  selectAccount: () => {},
+  votingStatus: VotingStatus.RegisterCandidates,
 });
 
 interface Web3ProviderProps {
@@ -27,14 +28,13 @@ interface Web3ProviderProps {
 }
 
 export const Web3Provider = ({ children }: Web3ProviderProps) => {
-  const [web3, setWeb3] = useState<any>(undefined);
-  const [accounts, setAccounts] = useState<string[]>([]);
+  const [web3, setWeb3] = useState<Web3<RegisteredSubscription>>();
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const [contract, setContract] = useState<any>(undefined);
-  const [selectedAccount, setSelectedAccount] = useState<string>();
-  const [votingStatus, setVotingStatus] = useState<VotingStatus>(
-    VotingStatus.CandidateRegistration
-  );
+  const [selectedAccount, setSelectedAccount] = useState<Account>();
+  const [votingStatus, setVotingStatus] = useState<VotingStatus>(VotingStatus.RegisterCandidates);
 
+  console.log(selectedAccount);
   useEffect(() => {
     const initWeb3 = async () => {
       try {
@@ -54,6 +54,14 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
           ScoreVoting.abi,
           deployedNetwork && deployedNetwork.address
         );
+        socketContract.events.VotersRegistrationStarted().on('data', () => {
+          notifications.show({
+            title: 'Voters Registration',
+            message: 'Voters registration has started!',
+            color: 'blue',
+          });
+          setVotingStatus(VotingStatus.RegisterVoters);
+        });
         socketContract.events.VotingStarted().on('data', () => {
           notifications.show({
             title: 'Voting started',
@@ -83,7 +91,11 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
         const statusNr = Number(status);
         setVotingStatus(statusNr as VotingStatus);
         setWeb3(web3Instance);
-        setAccounts(ethAccounts);
+        const fetchedAccounts: Account[] = ethAccounts.map((name, index) => ({
+          name,
+          index,
+        }));
+        setAccounts(fetchedAccounts);
         setContract(instance);
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -98,9 +110,20 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
     initWeb3();
   }, []);
 
+  const selectAccount = (name: string | undefined) => {
+    if (name === undefined) {
+      setSelectedAccount(undefined);
+      return;
+    }
+    const account = accounts.find((acc) => acc.name === name);
+    if (account) {
+      setSelectedAccount(account);
+    }
+  };
+
   return (
     <Web3Context.Provider
-      value={{ web3, accounts, contract, selectedAccount, setSelectedAccount, votingStatus }}
+      value={{ web3, accounts, contract, selectedAccount, selectAccount, votingStatus }}
     >
       {children}
     </Web3Context.Provider>

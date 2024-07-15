@@ -13,6 +13,8 @@ import {
 import { modals } from '@mantine/modals';
 import router from 'next/router';
 import { useCommitVote, useGetCandidates, useSubmitVote } from '@/hooks';
+import { useWeb3 } from '@/contexts';
+import { VotingStatus } from '@/types';
 
 interface CandidateVote {
   candidateId: number;
@@ -22,6 +24,7 @@ interface CandidateVote {
 const TOTAL_POINTS = 10;
 
 const VotingPage = () => {
+  const { votingStatus } = useWeb3();
   const { candidates, loading: getCandidatesLoading } = useGetCandidates();
   const { commitVote, loading: commitLoading } = useCommitVote();
   const { submitVote, loading: submitLoading } = useSubmitVote();
@@ -74,7 +77,7 @@ const VotingPage = () => {
     if (!success) {
       return;
     }
-    router.push('/voter/waiting');
+    router.push('/voter/results');
   }, [votes, totalPoints, router, submitVote]);
 
   const openModal = useCallback(
@@ -92,6 +95,16 @@ const VotingPage = () => {
       }),
     [handleVoteSubmit]
   );
+
+  if (votingStatus === VotingStatus.RegisterVoters) {
+    return (
+      <Container>
+        <Center mt="lg">
+          <Title order={2}>Please wait for other voters to register...</Title>
+        </Center>
+      </Container>
+    );
+  }
 
   return (
     <Container>

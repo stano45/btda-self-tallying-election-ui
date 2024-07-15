@@ -4,7 +4,7 @@ import router from 'next/router';
 
 const AdminPage = () => {
   useEffect(() => {
-    router.push('/admin/register');
+    router.push('/admin/registerCandidates');
   });
   return (
     <Container>

@@ -5,12 +5,13 @@ import { VotingStatus } from '@/types';
 import { useGetCandidates } from '@/hooks';
 import { useWeb3 } from '@/contexts';
 
-const PreVoting = () => {
+const RegisterCandidatesPage = () => {
   const { votingStatus } = useWeb3();
+  console.log(votingStatus);
 
   useEffect(() => {
-    if (votingStatus === VotingStatus.Vote) {
-      router.push('/voter/vote');
+    if (votingStatus === VotingStatus.RegisterVoters) {
+      router.push('/voter/registerVoters');
     }
   }, [votingStatus]);
 
@@ -43,4 +44,4 @@ const PreVoting = () => {
   );
 };
 
-export default PreVoting;
+export default RegisterCandidatesPage;

@@ -1,25 +1,16 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import router from 'next/router';
 import { modals } from '@mantine/modals';
 import { Button, Center, Container, Title, Text } from '@mantine/core';
-import { VotingStatus } from '@/types';
 import { useEndVoting } from '@/hooks';
-import { useWeb3 } from '@/contexts';
 
-const Waiting = () => {
-  const { votingStatus } = useWeb3();
+const VotePage = () => {
   const { endVoting, loading: endVotingLoading } = useEndVoting();
-
-  useEffect(() => {
-    if (votingStatus === VotingStatus.End) {
-      router.push('/voter/post');
-    }
-  }, [votingStatus]);
 
   const handleEndVoting = useCallback(async () => {
     const result = await endVoting();
     if (result) {
-      router.push('/admin/post');
+      router.push('/admin/results');
     }
   }, []);
 
@@ -51,4 +42,4 @@ const Waiting = () => {
   );
 };
 
-export default Waiting;
+export default VotePage;

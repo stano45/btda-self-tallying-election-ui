@@ -8,8 +8,8 @@ export const useGetCandidates = () => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const getCandidates = useCallback(async () => {
-    if (!contract) return;
+  const getCandidates = useCallback(async (): Promise<boolean> => {
+    if (!contract) return false;
 
     setLoading(true);
     try {
@@ -19,6 +19,7 @@ export const useGetCandidates = () => {
         name: candidate.name,
       }));
       setCandidates(formattedCandidates);
+      return true;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching candidates:', error);
@@ -27,6 +28,7 @@ export const useGetCandidates = () => {
         message: `Failed to fetch candidates from the blockchain: ${error}`,
         color: 'red',
       });
+      return false;
     } finally {
       setLoading(false);
     }

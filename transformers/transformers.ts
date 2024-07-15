@@ -18,12 +18,7 @@ export function transformCommitArgsToSmartContract(args: CommitArgs) {
   return {
     xis: args.xis.map(convertBPToBN),
     nus: args.nus.map(convertBPToBN),
-    proof1: args.proof1.map((proof) => [
-      convertBPToBN(proof.xi),
-      convertBPToBN(proof.nu),
-      proof.c,
-      ...proof.piArray.flatMap((pi) => [convertBPToBN(pi.a), convertBPToBN(pi.b), pi.d, pi.e]),
-    ]),
+    proof1: args.proof1,
     proof2: [
       convertBPToBN(args.proof2.p_xi),
       convertBPToBN(args.proof2.p_xi_new),

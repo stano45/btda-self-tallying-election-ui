@@ -4,21 +4,9 @@ import BN from 'bn.js';
 
 import abi from 'ethereumjs-abi';
 import { keccak256 } from 'ethereumjs-util';
-import {
-  BP,
-  CommitArgs,
-  DerivedKey,
-  KeyPair,
-  PiArrayElement,
-  PiType,
-  PrivateKey,
-  PublicKey,
-  VoterKeys,
-  ZKPoK1Result,
-  ZKPoK2Result,
-} from '@/types';
+import { BP, CommitArgs, DerivedKey, KeyPair, PrivateKey, PublicKey, ZKPoK2Result } from '@/types';
 
-const GROUP = new EC('secp256k1');
+const GROUP = new EC('bn256');
 const MIN_SCORE = 0;
 const MAX_SCORE = 5;
 
@@ -72,41 +60,14 @@ export function toPos(n: BN) {
   return n;
 }
 
-export function getVoterKeys(
-  keyPair: KeyPair,
-  numCandidates: number,
-  numVoters: number,
-  myNumber: number
-): VoterKeys {
-  const xs: BN[] = [];
-  const ys: BP[] = [];
-  for (let i = 1; i <= numCandidates; i += 1) {
-    const { x, y } = keyDerive(keyPair.privateKey, i);
-    xs.push(x);
-    ys.push(y);
+export function getVoterKeys(keyPair: KeyPair, numCandidates: number): BN[] {
+  console.log('Generating voter keys', keyPair, numCandidates);
+  const voterKeys: BN[] = [];
+  for (let j = 0; j < numCandidates; j += 1) {
+    const otherKeys = keyDerive(keyPair.privateKey, j);
+    voterKeys.push(otherKeys.y.getX(), otherKeys.y.getY());
   }
-  const randKeys: BP[] = [];
-  const randVoteKeys: BP[][] = [];
-  for (let i = 0; i < numVoters; i += 1) {
-    if (i !== myNumber) {
-      randKeys.push(GROUP.genKeyPair().getPublic());
-    } else {
-      randKeys.push(keyPair.publicKey);
-    }
-    const inner = [];
-    if (i === myNumber) {
-      randVoteKeys.push(ys);
-    } else {
-      for (let j = 1; j <= numVoters; j += 1) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { x, y } = keyDerive(keyPair.privateKey, j);
-        // console.log(y)
-        inner.push(y);
-      }
-      randVoteKeys.push(inner);
-    }
-  }
-  return { xs, ys, randKeys, randVoteKeys };
+  return voterKeys;
 }
 
 export function ZKPoK1(
@@ -120,10 +81,11 @@ export function ZKPoK1(
   myNumber: number,
   minScore: number,
   maxScore: number
-): ZKPoK1Result {
+): BN[] {
   if (!GROUP.n) {
     throw new Error('Group is not initialized');
   }
+
   const newKey = GROUP.genKeyPair();
   const X_new = newKey.getPrivate();
   const Y_new = newKey.getPublic();
@@ -137,11 +99,11 @@ export function ZKPoK1(
   for (let i = minScore; i <= maxScore; i += 1) {
     const e_k = getRand();
     const d_k = getRand();
-    let a_k: BP;
-    let b_k: BP;
+    let a_k;
+    let b_k;
     if (i !== point) {
       a_k = GROUP.g.mul(e_k).add(xi.mul(d_k));
-      b_k = W_i.mul(e_k).add(nu.add(GROUP.g.mul(point).neg()).mul(d_k));
+      b_k = W_i.mul(e_k).add(nu.add(GROUP.g.mul(i).neg()).mul(d_k));
     } else {
       a_k = GROUP.g.mul(rho);
       b_k = W_i.mul(rho);
@@ -177,26 +139,21 @@ export function ZKPoK1(
   if (X_new_new.isNeg()) {
     X_new_new = X_new_new.add(GROUP.n);
   }
-  const pi: PiType = {
-    xi,
-    nu,
-    c,
-    piArray: [],
-  };
+  const pi = [c, X_new_new, Y_new.getX(), Y_new.getY()];
   for (let i = minScore; i <= maxScore; i += 1) {
-    const piArrayElement: PiArrayElement = {
-      a: as[i - minScore],
-      b: bs[i - minScore],
-      d: ds[i - minScore],
-      e: es[i - minScore],
-    };
-    if (i === point) {
-      piArrayElement.d = d_j;
-      piArrayElement.e = e_j;
+    pi.push(as[i - minScore].getX());
+    pi.push(as[i - minScore].getY());
+    pi.push(bs[i - minScore].getX());
+    pi.push(bs[i - minScore].getY());
+    if (i !== point) {
+      pi.push(ds[i - minScore]);
+      pi.push(es[i - minScore]);
+    } else {
+      pi.push(d_j);
+      pi.push(e_j);
     }
-    pi.piArray.push(piArrayElement);
   }
-  return { pi, X_new_new, Y_new };
+  return pi;
 }
 
 export function ZKPoK2(
@@ -278,9 +235,9 @@ export function getCommitArgs(
     C.push({ xi, nu });
   }
 
-  const proof1: PiType[] = [];
+  const proof1: BN[][] = [];
   for (let i = 0; i < numCandidates; i += 1) {
-    const { pi } = ZKPoK1(
+    const pi = ZKPoK1(
       privateKey,
       ss[i],
       C[i].xi,
@@ -293,8 +250,38 @@ export function getCommitArgs(
       MAX_SCORE
     );
     proof1.push(pi);
+
+    // ---------------
+    // Verification
+    let check3 = true;
+    for (let k = 6; k < pi.length; k += 6) {
+      const b = GROUP.curve.point(pi[k], pi[k + 1]);
+      const d = pi[k + 2];
+      const e = pi[k + 3];
+      const we = w_i.mul(e);
+      const pointValue = Math.floor((k - 6) / 6);
+      const nugd = C[i].nu.add(GROUP.g.mul(pointValue).neg()).mul(d);
+      check3 = check3 && b.eq(we.add(nugd));
+    }
+    console.log(`ZPK1 test 3 candidate ${i}: ${check3}`);
+    const c = pi[0];
+    const X_new_new = pi[1];
+    const Y_new = GROUP.curve.point(pi[2], pi[3]);
+    console.log(
+      `ZPK1 test 4 candidate ${i}: ${Y_new.eq(votersPublicKeys[myNumber].mul(c).add(GROUP.g.mul(X_new_new)))}`
+    );
   }
   const proof2 = ZKPoK2(votersPublicKeys, xis, nus, ss, myNumber, numCandidates);
 
-  return { xis, nus, proof1, proof2, w_i };
+  const xis_bn = [];
+  const nus_bn = [];
+  for (let j = 0; j < C.length; j += 1) {
+    xis_bn.push(C[j].xi.getX());
+    xis_bn.push(C[j].xi.getY());
+    nus_bn.push(C[j].nu.getX());
+    nus_bn.push(C[j].nu.getY());
+  }
+  const W_i = getW(votersPublicKeys, myNumber);
+
+  return { xis, nus, proof1, proof2, w_i: W_i };
 }

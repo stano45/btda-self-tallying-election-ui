@@ -8,9 +8,14 @@ export interface Candidate {
   noVotes?: number;
 }
 
+export interface Account {
+  name: string;
+  index: number;
+}
+
 export enum VotingStatus {
-  CandidateRegistration = 0,
-  VoterRegistration = 1,
+  RegisterCandidates = 0,
+  RegisterVoters = 1,
   Commit = 2,
   Vote = 3,
   End = 4,
@@ -44,19 +49,6 @@ export interface PiArrayElement {
   e: BN;
 }
 
-export interface PiType {
-  xi: BP;
-  nu: BP;
-  c: BN;
-  piArray: PiArrayElement[];
-}
-
-export interface ZKPoK1Result {
-  pi: PiType;
-  X_new_new: BN;
-  Y_new: BP;
-}
-
 export interface ZKPoK2Result {
   p_xi: BP;
   p_xi_new: BP;
@@ -67,9 +59,9 @@ export interface ZKPoK2Result {
 }
 
 export interface CommitArgs {
-  xis: BP[];
-  nus: BP[];
-  proof1: PiType[];
+  xis: BN[];
+  nus: BN[];
+  proof1: BN[][];
   proof2: ZKPoK2Result;
   w_i: BP;
 }
