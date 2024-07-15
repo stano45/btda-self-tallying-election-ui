@@ -6,9 +6,10 @@ import {
   Table,
   Text,
   Center,
-  Divider,
   NumberInput,
   Group,
+  Slider,
+  Flex,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
@@ -111,11 +112,11 @@ const VotingPage = () => {
       <Title order={2} my="lg">
         Please distribute your {TOTAL_POINTS} points among the following candidates:
       </Title>
-      <Table>
+      <Table striped highlightOnHover withColumnBorders horizontalSpacing="xl">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Candidate</Table.Th>
-            <Table.Th>Points</Table.Th>
+            <Table.Th style={{ width: '50%' }}>Candidate</Table.Th>
+            <Table.Th style={{ width: '50%' }}>Points</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -124,29 +125,43 @@ const VotingPage = () => {
               votes.find((vote) => vote.candidateId === candidate.id)?.points || 0;
             return (
               <Table.Tr key={candidate.id}>
-                <Table.Td>
+                <Table.Td style={{ width: '50%' }}>
                   <Text>{candidate.name}</Text>
                 </Table.Td>
-                <Table.Td>
-                  <NumberInput
-                    min={0}
-                    max={maxPointsReached ? candidateVote : TOTAL_POINTS}
-                    value={candidateVote}
-                    onChange={(value) => handlePointsChange(candidate.id, value as number)}
-                    style={{ width: 100 }}
-                  />
+                <Table.Td style={{ width: '50%' }}>
+                  <Flex align="center" justify="center" direction="row" gap="lg">
+                    <NumberInput
+                      w="4rem"
+                      my="lg"
+                      min={0}
+                      max={maxPointsReached ? candidateVote : TOTAL_POINTS}
+                      value={candidateVote}
+                      onChange={(value) => handlePointsChange(candidate.id, value as number)}
+                      style={{ width: 100 }}
+                      hideControls
+                    />
+                    <Slider
+                      w="20rem"
+                      value={candidateVote}
+                      onChange={(value) => handlePointsChange(candidate.id, value)}
+                      max={TOTAL_POINTS}
+                      style={{ width: '100%' }}
+                      marks={[
+                        { value: 0, label: 0 },
+                        { value: TOTAL_POINTS, label: TOTAL_POINTS },
+                      ]}
+                      mb="lg"
+                    />
+                  </Flex>
                 </Table.Td>
               </Table.Tr>
             );
           })}
         </Table.Tbody>
       </Table>
-      <Divider my="lg" />
       <Center my="lg">
         <Group>
-          <Text>
-            Total points spent: {totalPoints}/{TOTAL_POINTS}
-          </Text>
+          <Text fw={800}>Points Remaining: {TOTAL_POINTS - totalPoints}</Text>
         </Group>
       </Center>
       <Center my="lg">
