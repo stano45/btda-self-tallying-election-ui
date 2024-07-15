@@ -20,7 +20,7 @@ const RegisterCandidatesPage = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       reloadCandidates();
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, [reloadCandidates]);

@@ -1,11 +1,20 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Button, Group, Container, List, Title, ScrollArea, Text } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
 import { useGetVoters, useStartVoting } from '@/hooks';
 
 const RegisterVotersPage = () => {
-  const { voters } = useGetVoters();
+  const { voters, reload: reloadVoters } = useGetVoters();
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      reloadVoters();
+    }, 1000);
+
+    return () => clearInterval(intervalId); // Cleanup on component unmount
+  }, [reloadVoters]);
+
   const { startVoting, loading } = useStartVoting();
   const handleStartVoting = useCallback(async () => {
     const startVotingResult = await startVoting();

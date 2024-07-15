@@ -13,6 +13,7 @@ const VoterPage = () => {
       case VotingStatus.RegisterVoters:
         router.push('/voter/registerVoters');
         break;
+      case VotingStatus.Commit:
       case VotingStatus.Vote:
         router.push('/voter/vote');
         break;
