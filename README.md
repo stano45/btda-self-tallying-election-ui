@@ -3,10 +3,20 @@ This is the UI for: https://github.com/stano45/btda-self-tallying-election
 
 ## Install & Run
 ```bash
+# Install dependencies
 yarn
+
+# Start the blockchain (in a separate terminal)
+ganache-cli
+
+# Deploy the contract (requires the btda-self-tallying-election repo at the same level)
+yarn migrate
+
+# Start the UI
 yarn dev
 ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+WARNING: Login in as voters in sequence, e.g. voter1, voter2, voter3, etc., otherwise there will be an error.
 
 ## yarn scripts
 
