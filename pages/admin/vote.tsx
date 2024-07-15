@@ -12,7 +12,7 @@ const VotePage = () => {
     if (result) {
       router.push('/admin/results');
     }
-  }, []);
+  }, [endVoting]);
 
   const openModal = () =>
     modals.openConfirmModal({

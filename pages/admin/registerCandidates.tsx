@@ -4,12 +4,7 @@ import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
 import { Candidate } from '@/types';
-import {
-  useAddCandidate,
-  useGetCandidates,
-  useStartVotersRegistration,
-  useStartVoting,
-} from '@/hooks';
+import { useAddCandidate, useGetCandidates, useStartVotersRegistration } from '@/hooks';
 import { useWeb3 } from '@/contexts';
 
 const RegisterCandidatesPage = () => {
@@ -24,13 +19,8 @@ const RegisterCandidatesPage = () => {
   } = useGetCandidates();
   const { startVotersRegistration, loading: startVotersRegistrationLoading } =
     useStartVotersRegistration();
-  const { startVoting, loading: startVotingLoading } = useStartVoting();
   const { addCandidate, loading: addCandidateLoading } = useAddCandidate();
-  const loading =
-    getCandidatesLoading ||
-    startVotingLoading ||
-    addCandidateLoading ||
-    startVotersRegistrationLoading;
+  const loading = getCandidatesLoading || addCandidateLoading || startVotersRegistrationLoading;
 
   useEffect(() => {
     if (registeredCandidates) {
@@ -59,7 +49,7 @@ const RegisterCandidatesPage = () => {
       reloadCandidates();
       setName('');
     },
-    [name, contract, accounts, candidates]
+    [name, contract, accounts?.length, candidates, addCandidate, reloadCandidates]
   );
 
   const handleSubmitCandidates = useCallback(async () => {
@@ -67,7 +57,7 @@ const RegisterCandidatesPage = () => {
     if (votersRegistrationResult) {
       router.push('/admin/registerVoters');
     }
-  }, [startVoting]);
+  }, [startVotersRegistration]);
 
   const openModal = () =>
     modals.openConfirmModal({

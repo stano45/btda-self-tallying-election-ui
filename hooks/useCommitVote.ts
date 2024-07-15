@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { notifications } from '@mantine/notifications';
 import BN from 'bn.js';
 import { ec as EC } from 'elliptic';
-import { transformCommitArgsToSmartContract } from '@/transformers/transformers';
 import { useCrypto, useWeb3 } from '@/contexts';
 import { getCommitArgs } from '@/crypto/crypto';
 
@@ -52,10 +51,10 @@ export const useCommitVote = () => {
           MY_NUMBER,
           votes.length
         );
-        const data = transformCommitArgsToSmartContract(args);
-        console.log('Committing: ', data.xis, data.nus, data.proof1, data.proof2, data.w_i);
+        args;
+        // TODO
         await contract.methods
-          .commitVote(data.xis, data.nus, data.proof1, data.proof2, data.w_i)
+          .commitVote()
           .send({ from: selectedAccount.name, gas: '1000000', gasPrice: 1000000000 });
         notifications.show({
           title: 'Vote Committed',

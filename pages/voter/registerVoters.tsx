@@ -3,16 +3,19 @@ import { Button, Center, Container, Title, Text, Flex } from '@mantine/core';
 import router from 'next/router';
 import { modals } from '@mantine/modals';
 import { useRegisterVoter } from '@/hooks/useRegisterVoter';
+import { useGetCandidates } from '@/hooks';
 
 const RegisterVotersPage = () => {
   const { registerVoter, loading } = useRegisterVoter();
+  const { candidates } = useGetCandidates();
+  console.log('c:', candidates);
 
   const register = useCallback(async () => {
-    const result = await registerVoter();
+    const result = await registerVoter(candidates.length);
     if (result) {
       router.push('/voter/vote');
     }
-  }, [registerVoter]);
+  }, [registerVoter, candidates]);
 
   const openModal = () =>
     modals.openConfirmModal({

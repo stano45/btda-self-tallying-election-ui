@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { notifications } from '@mantine/notifications';
 import { Candidate } from '@/types';
 import { useWeb3 } from '@/contexts';
@@ -14,6 +14,7 @@ export const useGetCandidates = () => {
     setLoading(true);
     try {
       const result = await contract.methods.getCandidates().call();
+      console.log('CANDIDATES', result);
       const formattedCandidates = result.map((candidate: any) => ({
         id: candidate.id.toString(),
         name: candidate.name,
@@ -38,5 +39,13 @@ export const useGetCandidates = () => {
     getCandidates();
   }, [getCandidates]);
 
-  return { candidates, setCandidates, reload: getCandidates, loading };
+  return useMemo(
+    () => ({
+      candidates,
+      setCandidates,
+      reload: getCandidates,
+      loading,
+    }),
+    [candidates, getCandidates, loading]
+  );
 };

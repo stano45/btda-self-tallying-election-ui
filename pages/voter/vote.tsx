@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
-import { useCommitVote, useGetCandidates, useSubmitVote } from '@/hooks';
+import { useCommitVote, useGetCandidates } from '@/hooks';
 import { useWeb3 } from '@/contexts';
 import { VotingStatus } from '@/types';
 
@@ -27,8 +27,8 @@ const VotingPage = () => {
   const { votingStatus } = useWeb3();
   const { candidates, loading: getCandidatesLoading } = useGetCandidates();
   const { commitVote, loading: commitLoading } = useCommitVote();
-  const { submitVote, loading: submitLoading } = useSubmitVote();
-  const loading = commitLoading || submitLoading || getCandidatesLoading;
+  // const { submitVote, loading: submitLoading } = useSubmitVote();
+  const loading = commitLoading || getCandidatesLoading;
 
   const [votes, setVotes] = useState<CandidateVote[]>([]);
   const [totalPoints, setTotalPoints] = useState<number>(0);
@@ -78,7 +78,7 @@ const VotingPage = () => {
       return;
     }
     router.push('/voter/results');
-  }, [votes, totalPoints, router, submitVote]);
+  }, [totalPoints, votes, commitVote]);
 
   const openModal = useCallback(
     () =>
