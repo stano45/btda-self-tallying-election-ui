@@ -18,6 +18,7 @@ interface CryptoProviderProps {
 export const CryptoProvider = ({ children }: CryptoProviderProps) => {
   const [keyPair, setKeyPair] = useState<KeyPair>();
 
+  console.log('keyPair', keyPair);
   useEffect(() => {
     if (keyPair) {
       return;
@@ -32,7 +33,7 @@ export const CryptoProvider = ({ children }: CryptoProviderProps) => {
         color: 'red',
       });
     }
-  });
+  }, [keyPair]);
 
   return <CryptoContext.Provider value={{ keyPair }}>{children}</CryptoContext.Provider>;
 };

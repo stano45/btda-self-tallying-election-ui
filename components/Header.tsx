@@ -17,9 +17,9 @@ export function Header() {
         <Text mt="sm" ml="md" fw={700} size="lg">
           Self-Tallying Election
         </Text>
-        <Flex direction="row" align="center">
-          <Text mt="md" mr="md">
-            {!!selectedAccount?.name && selectedAccount.index !== undefined && (
+        {!!selectedAccount?.name && selectedAccount.index !== undefined && (
+          <Flex direction="row" align="center">
+            <Text mt="md" mr="md">
               <Tooltip label={`Account ID: ${selectedAccount.name}`}>
                 <Flex direction="row" align="center" gap="sm">
                   <Text>Account:</Text>
@@ -28,12 +28,12 @@ export function Header() {
                   </Text>
                 </Flex>
               </Tooltip>
-            )}
-          </Text>
-          <Button variant="outline" onClick={handleLogout} mt="md" mr="md">
-            Logout
-          </Button>
-        </Flex>
+            </Text>
+            <Button variant="outline" onClick={handleLogout} mt="md" mr="md">
+              Logout
+            </Button>
+          </Flex>
+        )}
       </Group>
     </AppShell.Header>
   );
