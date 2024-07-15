@@ -13,7 +13,7 @@ export const useStartVoting = () => {
     try {
       await contract.methods
         .startVoting()
-        .send({ from: selectedAccount, gas: '1000000', gasPrice: 1000000000 });
+        .send({ from: selectedAccount.name, gas: '1000000', gasPrice: 1000000000 });
       return true;
     } catch (error) {
       // eslint-disable-next-line no-console

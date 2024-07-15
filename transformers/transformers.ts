@@ -1,4 +1,5 @@
-import { Candidate, CommitArgs } from '@/types';
+import BN from 'bn.js';
+import { BP, Candidate, CommitArgs } from '@/types';
 
 export function transformCandidateFromApi(candidate: any): Candidate {
   return {
@@ -9,19 +10,29 @@ export function transformCandidateFromApi(candidate: any): Candidate {
   };
 }
 
-export function transformCommitArgsToSmartContract(args: CommitArgs) {
+export function BNtoBase10String(bn: BN): string {
+  return bn.toString(10);
+}
+
+export function BPtoBase10Array(bp: BP): string[] {
+  return [BNtoBase10String(bp.getX()), BNtoBase10String(bp.getY())];
+}
+
+export function BPArrayToBase10Array(bpArray: BP[]): string[] {
+  const result: string[] = [];
+  for (const bp of bpArray) {
+    result.push(...BPtoBase10Array(bp));
+  }
+  return result;
+}
+
+export function transformCommitArgsToApi(commitArgs: CommitArgs) {
   return {
-    xis: args.xis,
-    nus: args.nus,
-    proof1: args.proof1,
-    proof2: [
-      args.proof2.p_xi,
-      args.proof2.p_xi_new,
-      args.proof2.p_nu,
-      args.proof2.p_nu_new,
-      args.proof2.s_s_new,
-      args.proof2.c,
-    ],
-    w_i: [args.w_i.getX(), args.w_i.getY()],
+    xis: BPArrayToBase10Array(commitArgs.xis),
+    nus: BPArrayToBase10Array(commitArgs.nus),
+    proof1: commitArgs.proof1.map((proof) => proof.map(BNtoBase10String)),
+    //TODO
+    proof2: [],
+    W_i: BPtoBase10Array(commitArgs.w_i),
   };
 }

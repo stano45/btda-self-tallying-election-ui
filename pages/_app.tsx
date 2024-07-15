@@ -5,13 +5,12 @@ import Head from 'next/head';
 import { AppShell, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
-import { theme } from '../theme';
 import { CryptoProvider, Web3Provider } from '@/contexts';
 import { Header } from '@/components';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <MantineProvider theme={theme}>
+    <MantineProvider defaultColorScheme="dark">
       <CryptoProvider>
         <Web3Provider>
           <ModalsProvider>

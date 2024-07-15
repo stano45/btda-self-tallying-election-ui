@@ -8,10 +8,17 @@ export interface Candidate {
   noVotes?: number;
 }
 
+export interface Account {
+  name: string;
+  index: number;
+}
+
 export enum VotingStatus {
-  Pre = 0,
-  Vote = 1,
-  Post = 2,
+  RegisterCandidates = 0,
+  RegisterVoters = 1,
+  Commit = 2,
+  Vote = 3,
+  End = 4,
 }
 
 export type BP = curve.base.BasePoint;
@@ -35,10 +42,11 @@ export interface VoterKeys {
   randVoteKeys: BP[][];
 }
 
-export interface ZKPoK1Result {
-  pi: (BN | BP)[];
-  X_new_new: BN;
-  Y_new: BP;
+export interface PiArrayElement {
+  a: BP;
+  b: BP;
+  d: BN;
+  e: BN;
 }
 
 export interface ZKPoK2Result {
@@ -53,7 +61,7 @@ export interface ZKPoK2Result {
 export interface CommitArgs {
   xis: BP[];
   nus: BP[];
-  proof1: (BN | BP)[][];
+  proof1: BN[][];
   proof2: ZKPoK2Result;
   w_i: BP;
 }

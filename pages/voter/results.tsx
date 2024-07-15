@@ -1,13 +1,38 @@
 import { Center, Container, Table, Title } from '@mantine/core';
-import { Candidate } from '@/types';
+import { Candidate, VotingStatus } from '@/types';
+import { useWeb3 } from '@/contexts';
 
 const PostVoting = () => {
+  const { votingStatus } = useWeb3();
+
   const winner: Candidate = {
     id: 123,
     name: 'sample candidate',
     yesVotes: 123,
     noVotes: 456,
   };
+
+  // Voting has not ended yet
+  if (votingStatus === VotingStatus.Vote) {
+    return (
+      <Container>
+        <Center>
+          <Title> Thanks for voting! Waiting for other participants... </Title>
+        </Center>
+
+        <Center mt="lg">
+          <iframe
+            title="waiting-gif"
+            src="https://giphy.com/embed/QBd2kLB5qDmysEXre9"
+            frameBorder="0"
+            width="480"
+            height="288"
+          />
+        </Center>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Title>Election Result</Title>

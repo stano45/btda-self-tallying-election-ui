@@ -6,24 +6,30 @@ import {
   Table,
   Text,
   Center,
-  Divider,
   NumberInput,
   Group,
+  Slider,
+  Flex,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import router from 'next/router';
-import { useGetCandidates, useSubmitVote } from '@/hooks';
+import { useCommitVote, useGetCandidates } from '@/hooks';
+import { useWeb3 } from '@/contexts';
+import { VotingStatus } from '@/types';
 
 interface CandidateVote {
   candidateId: number;
   points: number;
 }
 
-const TOTAL_POINTS = 10;
+const TOTAL_POINTS = 5;
 
 const VotingPage = () => {
-  const { candidates } = useGetCandidates();
-  const { submitVote, loading } = useSubmitVote();
+  const { votingStatus } = useWeb3();
+  const { candidates, loading: getCandidatesLoading } = useGetCandidates();
+  const { commitVote, loading: commitLoading } = useCommitVote();
+  // const { submitVote, loading: submitLoading } = useSubmitVote();
+  const loading = commitLoading || getCandidatesLoading;
 
   const [votes, setVotes] = useState<CandidateVote[]>([]);
   const [totalPoints, setTotalPoints] = useState<number>(0);
@@ -67,12 +73,13 @@ const VotingPage = () => {
       return;
     }
     const voteArray = votes.map((vote) => vote.points);
-    const success = await submitVote(voteArray);
+    // const success = await submitVote(voteArray);
+    const success = await commitVote(voteArray);
     if (!success) {
       return;
     }
-    router.push('/voter/waiting');
-  }, [votes, totalPoints, router, submitVote]);
+    router.push('/voter/results');
+  }, [totalPoints, votes, commitVote]);
 
   const openModal = useCallback(
     () =>
@@ -90,16 +97,26 @@ const VotingPage = () => {
     [handleVoteSubmit]
   );
 
+  if (votingStatus === VotingStatus.RegisterVoters) {
+    return (
+      <Container>
+        <Center mt="lg">
+          <Title order={2}>Please wait for other voters to register...</Title>
+        </Center>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <Title order={2} my="lg">
         Please distribute your {TOTAL_POINTS} points among the following candidates:
       </Title>
-      <Table>
+      <Table striped highlightOnHover withColumnBorders horizontalSpacing="xl">
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Candidate</Table.Th>
-            <Table.Th>Points</Table.Th>
+            <Table.Th style={{ width: '50%' }}>Candidate</Table.Th>
+            <Table.Th style={{ width: '50%' }}>Points</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
@@ -108,29 +125,43 @@ const VotingPage = () => {
               votes.find((vote) => vote.candidateId === candidate.id)?.points || 0;
             return (
               <Table.Tr key={candidate.id}>
-                <Table.Td>
+                <Table.Td style={{ width: '50%' }}>
                   <Text>{candidate.name}</Text>
                 </Table.Td>
-                <Table.Td>
-                  <NumberInput
-                    min={0}
-                    max={maxPointsReached ? candidateVote : TOTAL_POINTS}
-                    value={candidateVote}
-                    onChange={(value) => handlePointsChange(candidate.id, value as number)}
-                    style={{ width: 100 }}
-                  />
+                <Table.Td style={{ width: '50%' }}>
+                  <Flex align="center" justify="center" direction="row" gap="lg">
+                    <NumberInput
+                      w="4rem"
+                      my="lg"
+                      min={0}
+                      max={maxPointsReached ? candidateVote : TOTAL_POINTS}
+                      value={candidateVote}
+                      onChange={(value) => handlePointsChange(candidate.id, value as number)}
+                      style={{ width: 100 }}
+                      hideControls
+                    />
+                    <Slider
+                      w="20rem"
+                      value={candidateVote}
+                      onChange={(value) => handlePointsChange(candidate.id, value)}
+                      max={TOTAL_POINTS}
+                      style={{ width: '100%' }}
+                      marks={[
+                        { value: 0, label: 0 },
+                        { value: TOTAL_POINTS, label: TOTAL_POINTS },
+                      ]}
+                      mb="lg"
+                    />
+                  </Flex>
                 </Table.Td>
               </Table.Tr>
             );
           })}
         </Table.Tbody>
       </Table>
-      <Divider my="lg" />
       <Center my="lg">
         <Group>
-          <Text>
-            Total points spent: {totalPoints}/{TOTAL_POINTS}
-          </Text>
+          <Text fw={800}>Points Remaining: {TOTAL_POINTS - totalPoints}</Text>
         </Group>
       </Center>
       <Center my="lg">

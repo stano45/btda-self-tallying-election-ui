@@ -14,7 +14,7 @@ export const useAddCandidate = () => {
       try {
         await contract.methods
           .addCandidate(name)
-          .send({ from: selectedAccount, gas: '1000000', gasPrice: 1000000000 });
+          .send({ from: selectedAccount.name, gas: '1000000', gasPrice: 1000000000 });
         notifications.show({
           title: 'Registration successful',
           message: `Candidate ${name} registered successfully`,

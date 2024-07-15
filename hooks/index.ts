@@ -2,6 +2,7 @@ export * from './useAddCandidate';
 export * from './useCommitVote';
 export * from './useEndVoting';
 export * from './useGetCandidates';
+export * from './useGetVoters';
 export * from './useGetVotingState';
 export * from './useGetWinner';
 export * from './useStartVotersRegistration';

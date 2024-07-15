@@ -1,8 +1,7 @@
 import { Center, Container, Table, Title } from '@mantine/core';
 import { Candidate } from '@/types';
 
-const PostVoting = () => {
-  // const { winner } = useGetWinner();
+const ResultsPage = () => {
   const winner: Candidate = {
     id: 123,
     name: 'sample candidate',
@@ -38,4 +37,4 @@ const PostVoting = () => {
   );
 };
 
-export default PostVoting;
+export default ResultsPage;

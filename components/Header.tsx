@@ -1,9 +1,9 @@
-import { AppShell, Text, Button, Group, Flex } from '@mantine/core';
+import { AppShell, Text, Button, Group, Flex, Tooltip } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useWeb3 } from '@/contexts';
 
 export function Header() {
-  const { selectedAccount, setSelectedAccount } = useWeb3();
+  const { selectedAccount, selectAccount: setSelectedAccount } = useWeb3();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -19,7 +19,16 @@ export function Header() {
         </Text>
         <Flex direction="row" align="center">
           <Text mt="md" mr="md">
-            {!!selectedAccount && <Text>Logged in as: {selectedAccount}</Text>}
+            {!!selectedAccount?.name && selectedAccount.index !== undefined && (
+              <Tooltip label={`Account ID: ${selectedAccount.name}`}>
+                <Flex direction="row" align="center" gap="sm">
+                  <Text>Account:</Text>
+                  <Text fw={500}>
+                    {selectedAccount.index === 0 ? 'Admin' : `Voter ${selectedAccount.index}`}
+                  </Text>
+                </Flex>
+              </Tooltip>
+            )}
           </Text>
           <Button variant="outline" onClick={handleLogout} mt="md" mr="md">
             Logout
